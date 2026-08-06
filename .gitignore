@@ -1,0 +1,48 @@
+# Secrets & configuration
+GoogleService-Info.plist
+Secrets.xcconfig
+*.jks
+*.keystore
+
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.pins
+Package.resolved.bak
+
+# Test results
+*.xcresult
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output

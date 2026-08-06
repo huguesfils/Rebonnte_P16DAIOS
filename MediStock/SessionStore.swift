@@ -1,5 +1,5 @@
 import Foundation
-import Firebase
+import FirebaseAuth
 
 class SessionStore: ObservableObject {
     @Published var session: User?

@@ -1,5 +1,5 @@
 import Foundation
-import Firebase
+import FirebaseFirestore
 
 class MedicineStockViewModel: ObservableObject {
     @Published var medicines: [Medicine] = []
