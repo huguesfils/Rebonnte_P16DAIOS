@@ -35,9 +35,9 @@ final class MedicineStockViewModel {
         }
     }
 
-    func loadHistory(for medicine: Medicine) async {
+    func loadHistory(forMedicineId medicineId: String) async {
         do {
-            history = try await historyRepository.fetchHistory(medicineId: medicine.id)
+            history = try await historyRepository.fetchHistory(medicineId: medicineId)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -45,6 +45,10 @@ final class MedicineStockViewModel {
 
     func medicines(inAisle aisle: String) -> [Medicine] {
         medicines.filter { $0.aisle == aisle }
+    }
+
+    func medicine(withId id: String) -> Medicine? {
+        medicines.first { $0.id == id }
     }
 
     // MARK: - Write
@@ -77,37 +81,56 @@ final class MedicineStockViewModel {
         await loadMedicines()
     }
 
-    func updateMedicine(_ medicine: Medicine) async {
+    func updateDetails(medicineId: String, name: String, aisle: String) async {
         guard let user = authService.currentUser else {
             errorMessage = MediStockError.notAuthenticated.localizedDescription
             return
         }
 
+        guard var updated = medicine(withId: medicineId) else {
+            errorMessage = MediStockError.medicineNotFound.localizedDescription
+            return
+        }
+
+        let previousName = updated.name
+        let previousAisle = updated.aisle
+        updated.name = name
+        updated.aisle = aisle
+
+        guard updated.name != previousName || updated.aisle != previousAisle else { return }
+
         do {
-            try await medicineRepository.save(medicine)
+            try await medicineRepository.save(updated)
         } catch {
             errorMessage = error.localizedDescription
             return
         }
 
-        if let index = medicines.firstIndex(where: { $0.id == medicine.id }) {
-            medicines[index] = medicine
-        }
+        apply(updated)
 
         await recordHistory(
-            medicineId: medicine.id,
+            medicineId: medicineId,
             user: user,
-            action: "Updated \(medicine.name)",
-            details: "Updated medicine details"
+            action: "Updated \(updated.name)",
+            details: "Name \(previousName) → \(updated.name), aisle \(previousAisle) → \(updated.aisle)"
         )
     }
 
-    func increaseStock(_ medicine: Medicine) async {
-        await updateStock(medicine, by: 1)
+    func increaseStock(medicineId: String) async {
+        await updateStock(medicineId: medicineId, by: 1)
     }
 
-    func decreaseStock(_ medicine: Medicine) async {
-        await updateStock(medicine, by: -1)
+    func decreaseStock(medicineId: String) async {
+        await updateStock(medicineId: medicineId, by: -1)
+    }
+
+    func setStock(medicineId: String, to newStock: Int) async {
+        guard let current = medicine(withId: medicineId) else {
+            errorMessage = MediStockError.medicineNotFound.localizedDescription
+            return
+        }
+
+        await updateStock(medicineId: medicineId, by: newStock - current.stock)
     }
 
     func delete(_ medicine: Medicine) async {
@@ -134,31 +157,44 @@ final class MedicineStockViewModel {
 
     // MARK: - Private
 
-    private func updateStock(_ medicine: Medicine, by amount: Int) async {
+    private func updateStock(medicineId: String, by amount: Int) async {
         guard let user = authService.currentUser else {
             errorMessage = MediStockError.notAuthenticated.localizedDescription
             return
         }
 
-        let newStock = medicine.stock + amount
+        guard let current = medicine(withId: medicineId) else {
+            errorMessage = MediStockError.medicineNotFound.localizedDescription
+            return
+        }
+
+        guard amount != 0 else { return }
+
+        let previousStock = current.stock
+        let newStock = previousStock + amount
 
         do {
-            try await medicineRepository.updateStock(medicineId: medicine.id, newStock: newStock)
+            try await medicineRepository.updateStock(medicineId: medicineId, newStock: newStock)
         } catch {
             errorMessage = error.localizedDescription
             return
         }
 
-        if let index = medicines.firstIndex(where: { $0.id == medicine.id }) {
-            medicines[index].stock = newStock
-        }
+        var updated = current
+        updated.stock = newStock
+        apply(updated)
 
         await recordHistory(
-            medicineId: medicine.id,
+            medicineId: medicineId,
             user: user,
-            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)",
-            details: "Stock changed from \(medicine.stock) to \(newStock)"
+            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(current.name) by \(abs(amount))",
+            details: "Stock changed from \(previousStock) to \(newStock)"
         )
+    }
+
+    private func apply(_ medicine: Medicine) {
+        guard let index = medicines.firstIndex(where: { $0.id == medicine.id }) else { return }
+        medicines[index] = medicine
     }
 
     private func recordHistory(medicineId: String, user: AppUser, action: String, details: String) async {

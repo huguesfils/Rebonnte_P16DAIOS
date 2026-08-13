@@ -54,6 +54,7 @@
 		F4DA001000000000000000AA /* ErrorAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DA000100000000000000AA /* ErrorAlertModifier.swift */; };
 		F4DA002000000000000000AA /* MediStockErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DA000200000000000000AA /* MediStockErrorTests.swift */; };
 		F4DB001000000000000000AA /* SignOutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DB000100000000000000AA /* SignOutButton.swift */; };
+		F4DC001000000000000000AA /* MedicineHistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC000100000000000000AA /* MedicineHistorySection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +123,7 @@
 		F4DA000100000000000000AA /* ErrorAlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlertModifier.swift; sourceTree = "<group>"; };
 		F4DA000200000000000000AA /* MediStockErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockErrorTests.swift; sourceTree = "<group>"; };
 		F4DB000100000000000000AA /* SignOutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutButton.swift; sourceTree = "<group>"; };
+		F4DC000100000000000000AA /* MedicineHistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineHistorySection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -340,6 +342,7 @@
 		F4D7000400000000000000AA /* Medicines */ = {
 			isa = PBXGroup;
 			children = (
+				F4DC000100000000000000AA /* MedicineHistorySection.swift */,
 				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
 				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
 				53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */,
@@ -495,6 +498,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4DC001000000000000000AA /* MedicineHistorySection.swift in Sources */,
 				F4DB001000000000000000AA /* SignOutButton.swift in Sources */,
 				F4DA001000000000000000AA /* ErrorAlertModifier.swift in Sources */,
 				F4D9001000000000000000AA /* LoginViewModel.swift in Sources */,

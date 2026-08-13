@@ -87,7 +87,7 @@ struct MedicineStockViewModelTests {
         ]
         let sut = makeSUT()
 
-        await sut.loadHistory(for: .stub(id: "medicine-1"))
+        await sut.loadHistory(forMedicineId: "medicine-1")
 
         #expect(sut.history.count == 1)
         #expect(sut.history.first?.id == "h1")
@@ -97,7 +97,7 @@ struct MedicineStockViewModelTests {
         mockHistory.errorToThrow = MediStockError.networkUnavailable
         let sut = makeSUT()
 
-        await sut.loadHistory(for: .stub())
+        await sut.loadHistory(forMedicineId: "medicine-1")
 
         #expect(sut.history.isEmpty)
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)
@@ -145,7 +145,7 @@ struct MedicineStockViewModelTests {
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.increaseStock(.stub(id: "1", stock: 10))
+        await sut.increaseStock(medicineId: "1")
 
         #expect(sut.medicines.first?.stock == 11)
         #expect(mockMedicines.updatedStocks.first?.newStock == 11)
@@ -157,7 +157,7 @@ struct MedicineStockViewModelTests {
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.decreaseStock(.stub(id: "1", stock: 10))
+        await sut.decreaseStock(medicineId: "1")
 
         #expect(sut.medicines.first?.stock == 9)
     }
@@ -168,7 +168,7 @@ struct MedicineStockViewModelTests {
         await sut.loadMedicines()
         mockMedicines.errorToThrow = MediStockError.networkUnavailable
 
-        await sut.increaseStock(.stub(id: "1", stock: 10))
+        await sut.increaseStock(medicineId: "1")
 
         #expect(sut.medicines.first?.stock == 10)
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)
@@ -178,34 +178,129 @@ struct MedicineStockViewModelTests {
         mockAuth.currentUser = nil
         let sut = makeSUT()
 
-        await sut.increaseStock(.stub())
+        await sut.increaseStock(medicineId: "medicine-1")
 
         #expect(mockMedicines.updatedStocks.isEmpty)
         #expect(sut.errorMessage == MediStockError.notAuthenticated.localizedDescription)
     }
 
-    // MARK: - updateMedicine
+    @Test func repeatedIncrementsAccumulate() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
 
-    @Test func updateMedicineSavesAndRecordsHistoryWithoutReload() async {
+        await sut.increaseStock(medicineId: "1")
+        await sut.increaseStock(medicineId: "1")
+        await sut.increaseStock(medicineId: "1")
+
+        #expect(sut.medicines.first?.stock == 13)
+        #expect(mockMedicines.storedMedicines["1"]?.stock == 13)
+        #expect(mockMedicines.updatedStocks.map(\.newStock) == [11, 12, 13])
+    }
+
+    @Test func repeatedDecrementsAccumulate() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.decreaseStock(medicineId: "1")
+        await sut.decreaseStock(medicineId: "1")
+
+        #expect(sut.medicines.first?.stock == 8)
+        #expect(mockMedicines.storedMedicines["1"]?.stock == 8)
+    }
+
+    @Test func historyDetailsReflectEachTransition() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.increaseStock(medicineId: "1")
+        await sut.increaseStock(medicineId: "1")
+
+        #expect(mockHistory.addedEntries.map(\.details) == [
+            "Stock changed from 10 to 11",
+            "Stock changed from 11 to 12"
+        ])
+    }
+
+    @Test func stockUpdateOnUnknownMedicineIsRejected() async {
+        let sut = makeSUT()
+
+        await sut.increaseStock(medicineId: "absent")
+
+        #expect(mockMedicines.updatedStocks.isEmpty)
+        #expect(sut.errorMessage == MediStockError.medicineNotFound.localizedDescription)
+    }
+
+    // MARK: - setStock
+
+    @Test func setStockAppliesAbsoluteValue() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.setStock(medicineId: "1", to: 42)
+
+        #expect(sut.medicines.first?.stock == 42)
+        #expect(mockHistory.addedEntries.first?.details == "Stock changed from 10 to 42")
+    }
+
+    @Test func setStockToSameValueWritesNothing() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.setStock(medicineId: "1", to: 10)
+
+        #expect(mockMedicines.updatedStocks.isEmpty)
+        #expect(mockHistory.addedEntries.isEmpty)
+    }
+
+    // MARK: - updateDetails
+
+    @Test func updateDetailsSavesAndRecordsHistoryWithoutReload() async {
         mockMedicines.storedMedicines = ["1": .stub(id: "1")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.updateMedicine(.stub(id: "1", name: "Renommé"))
+        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Aisle 1")
 
         #expect(sut.medicines.first?.name == "Renommé")
         #expect(mockHistory.addedEntries.count == 1)
         #expect(mockMedicines.fetchCallCount == 1)
     }
 
-    @Test func updateMedicineFailureSurfacesError() async {
-        mockMedicines.errorToThrow = MediStockError.permissionDenied
+    @Test func updateDetailsFailureSurfacesError() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1")]
         let sut = makeSUT()
+        await sut.loadMedicines()
+        mockMedicines.errorToThrow = MediStockError.permissionDenied
 
-        await sut.updateMedicine(.stub())
+        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Aisle 1")
 
         #expect(mockHistory.addedEntries.isEmpty)
         #expect(sut.errorMessage == MediStockError.permissionDenied.localizedDescription)
+    }
+
+    @Test func updateDetailsWithoutChangeWritesNothing() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.updateDetails(medicineId: "1", name: "Doliprane", aisle: "Aisle 1")
+
+        #expect(mockMedicines.savedMedicines.isEmpty)
+        #expect(mockHistory.addedEntries.isEmpty)
+    }
+
+    @Test func updateDetailsOnUnknownMedicineIsRejected() async {
+        let sut = makeSUT()
+
+        await sut.updateDetails(medicineId: "absent", name: "X", aisle: "Y")
+
+        #expect(mockMedicines.savedMedicines.isEmpty)
+        #expect(sut.errorMessage == MediStockError.medicineNotFound.localizedDescription)
     }
 
     // MARK: - delete
@@ -240,7 +335,7 @@ struct MedicineStockViewModelTests {
         await sut.loadMedicines()
         mockHistory.errorToThrow = MediStockError.networkUnavailable
 
-        await sut.increaseStock(.stub(id: "1", stock: 10))
+        await sut.increaseStock(medicineId: "1")
 
         #expect(sut.medicines.first?.stock == 11)
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)

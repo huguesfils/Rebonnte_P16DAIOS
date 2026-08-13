@@ -1,19 +1,29 @@
 import SwiftUI
 
 struct MedicineDetailView: View {
-    @State private var medicine: Medicine
-
+    private let medicineId: String
     private let viewModel: MedicineStockViewModel
 
+    @State private var draftName: String
+    @State private var draftAisle: String
+    @State private var draftStock: Int
+
     init(medicine: Medicine, viewModel: MedicineStockViewModel) {
-        _medicine = State(initialValue: medicine)
+        medicineId = medicine.id
         self.viewModel = viewModel
+        _draftName = State(initialValue: medicine.name)
+        _draftAisle = State(initialValue: medicine.aisle)
+        _draftStock = State(initialValue: medicine.stock)
+    }
+
+    private var medicine: Medicine? {
+        viewModel.medicine(withId: medicineId)
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text(medicine.name)
+                Text(medicine?.name ?? draftName)
                     .font(.largeTitle)
                     .padding(.top, 20)
 
@@ -23,16 +33,18 @@ struct MedicineDetailView: View {
 
                 medicineAisleSection
 
-                historySection
+                MedicineHistorySection(entries: viewModel.history)
             }
             .padding(.vertical)
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
         .task {
-            await viewModel.loadHistory(for: medicine)
+            await viewModel.loadHistory(forMedicineId: medicineId)
         }
-        .onChange(of: medicine) {
-            Task { await viewModel.updateMedicine(medicine) }
+        .onChange(of: medicine?.stock) { _, stock in
+            if let stock {
+                draftStock = stock
+            }
         }
     }
 }
@@ -42,8 +54,10 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Name")
                 .font(.headline)
-            TextField("Name", text: $medicine.name)
+            TextField("Name", text: $draftName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .submitLabel(.done)
+                .onSubmit(saveDetails)
                 .padding(.bottom, 10)
         }
         .padding(.horizontal)
@@ -54,24 +68,26 @@ extension MedicineDetailView {
             Text("Stock")
                 .font(.headline)
             HStack {
-                Button(action: {
-                    Task { await viewModel.decreaseStock(medicine) }
-                }) {
-                    Image(systemName: "minus.circle")
-                        .font(.title)
-                        .foregroundColor(.red)
+                Button("Diminuer le stock", systemImage: "minus.circle") {
+                    Task { await viewModel.decreaseStock(medicineId: medicineId) }
                 }
-                TextField("Stock", value: $medicine.stock, formatter: NumberFormatter())
+                .labelStyle(.iconOnly)
+                .font(.title)
+                .foregroundStyle(.red)
+
+                TextField("Stock", value: $draftStock, formatter: NumberFormatter())
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
                     .frame(width: 100)
-                Button(action: {
-                    Task { await viewModel.increaseStock(medicine) }
-                }) {
-                    Image(systemName: "plus.circle")
-                        .font(.title)
-                        .foregroundColor(.green)
+                    .submitLabel(.done)
+                    .onSubmit(saveStock)
+
+                Button("Augmenter le stock", systemImage: "plus.circle") {
+                    Task { await viewModel.increaseStock(medicineId: medicineId) }
                 }
+                .labelStyle(.iconOnly)
+                .font(.title)
+                .foregroundStyle(.green)
             }
             .padding(.bottom, 10)
         }
@@ -82,36 +98,27 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Aisle")
                 .font(.headline)
-            TextField("Aisle", text: $medicine.aisle)
+            TextField("Aisle", text: $draftAisle)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .submitLabel(.done)
+                .onSubmit(saveDetails)
                 .padding(.bottom, 10)
         }
         .padding(.horizontal)
     }
 
-    private var historySection: some View {
-        VStack(alignment: .leading) {
-            Text("History")
-                .font(.headline)
-                .padding(.top, 20)
-            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }) { entry in
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(entry.action)
-                        .font(.headline)
-                    Text("User: \(entry.user)")
-                        .font(.subheadline)
-                    Text("Date: \(entry.timestamp.formatted())")
-                        .font(.subheadline)
-                    Text("Details: \(entry.details)")
-                        .font(.subheadline)
-                }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding(.bottom, 5)
-            }
+    // MARK: - Actions
+
+    private func saveDetails() {
+        Task {
+            await viewModel.updateDetails(medicineId: medicineId, name: draftName, aisle: draftAisle)
         }
-        .padding(.horizontal)
+    }
+
+    private func saveStock() {
+        Task {
+            await viewModel.setStock(medicineId: medicineId, to: draftStock)
+        }
     }
 }
 
