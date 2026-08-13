@@ -1,12 +1,15 @@
 import SwiftUI
 
 struct MedicineDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+
     private let medicineId: String
     private let viewModel: MedicineStockViewModel
 
     @State private var draftName: String
     @State private var draftAisle: String
     @State private var draftStock: Int
+    @State private var isConfirmingDeletion = false
 
     init(medicine: Medicine, viewModel: MedicineStockViewModel) {
         medicineId = medicine.id
@@ -34,6 +37,8 @@ struct MedicineDetailView: View {
                 medicineAisleSection
 
                 MedicineHistorySection(entries: viewModel.history)
+
+                deleteSection
             }
             .padding(.vertical)
         }
@@ -45,6 +50,15 @@ struct MedicineDetailView: View {
             if let stock {
                 draftStock = stock
             }
+        }
+        .confirmationDialog(
+            "Supprimer ce médicament ?",
+            isPresented: $isConfirmingDeletion,
+            titleVisibility: .visible
+        ) {
+            Button("Supprimer", role: .destructive, action: delete)
+        } message: {
+            Text("Le médicament sera retiré du stock. L'historique de ses mouvements est conservé.")
         }
     }
 }
@@ -107,7 +121,24 @@ extension MedicineDetailView {
         .padding(.horizontal)
     }
 
+    private var deleteSection: some View {
+        Button("Supprimer ce médicament", systemImage: "trash", role: .destructive) {
+            isConfirmingDeletion = true
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 20)
+        .padding(.horizontal)
+    }
+
     // MARK: - Actions
+
+    private func delete() {
+        Task {
+            if await viewModel.delete(medicineId: medicineId) {
+                dismiss()
+            }
+        }
+    }
 
     private func saveDetails() {
         Task {

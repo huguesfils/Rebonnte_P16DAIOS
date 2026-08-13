@@ -42,6 +42,9 @@ struct AllMedicinesView: View {
                             }
                         }
                     }
+                    .onDelete { offsets in
+                        Task { await viewModel.delete(atOffsets: offsets, in: filteredAndSortedMedicines) }
+                    }
                 }
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(

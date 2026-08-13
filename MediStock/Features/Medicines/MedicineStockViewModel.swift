@@ -139,26 +139,41 @@ final class MedicineStockViewModel {
         await updateStock(medicineId: medicineId, by: newStock - current.stock)
     }
 
-    func delete(_ medicine: Medicine) async {
+    @discardableResult
+    func delete(medicineId: String) async -> Bool {
         guard let user = authService.currentUser else {
             errorMessage = MediStockError.notAuthenticated.localizedDescription
-            return
+            return false
+        }
+
+        guard let medicine = medicine(withId: medicineId) else {
+            errorMessage = MediStockError.medicineNotFound.localizedDescription
+            return false
         }
 
         do {
-            try await medicineRepository.delete(medicineId: medicine.id)
+            try await medicineRepository.delete(medicineId: medicineId)
         } catch {
             errorMessage = error.localizedDescription
-            return
+            return false
         }
 
         await recordHistory(
-            medicineId: medicine.id,
+            medicineId: medicineId,
             user: user,
             action: "Deleted \(medicine.name)",
-            details: "Removed medicine"
+            details: "Removed from \(medicine.aisle), stock was \(medicine.stock)"
         )
         await loadMedicines()
+        return true
+    }
+
+    func delete(atOffsets offsets: IndexSet, in medicines: [Medicine]) async {
+        let ids = offsets.compactMap { medicines.indices.contains($0) ? medicines[$0].id : nil }
+
+        for id in ids {
+            await delete(medicineId: id)
+        }
     }
 
     // MARK: - Private

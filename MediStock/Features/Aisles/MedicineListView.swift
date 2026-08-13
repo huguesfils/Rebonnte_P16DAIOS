@@ -9,9 +9,13 @@ struct MedicineListView: View {
         self.viewModel = viewModel
     }
 
+    private var medicines: [Medicine] {
+        viewModel.medicines(inAisle: aisle)
+    }
+
     var body: some View {
         List {
-            ForEach(viewModel.medicines(inAisle: aisle)) { medicine in
+            ForEach(medicines) { medicine in
                 NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
                     VStack(alignment: .leading) {
                         Text(medicine.name)
@@ -20,6 +24,9 @@ struct MedicineListView: View {
                             .font(.subheadline)
                     }
                 }
+            }
+            .onDelete { offsets in
+                Task { await viewModel.delete(atOffsets: offsets, in: medicines) }
             }
         }
         .navigationBarTitle(aisle)
