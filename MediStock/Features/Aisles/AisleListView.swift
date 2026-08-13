@@ -3,6 +3,8 @@ import SwiftUI
 struct AisleListView: View {
     private let viewModel: MedicineStockViewModel
 
+    @State private var isAddingMedicine = false
+
     init(viewModel: MedicineStockViewModel) {
         self.viewModel = viewModel
     }
@@ -19,12 +21,14 @@ struct AisleListView: View {
             .navigationBarTitle("Aisles")
             .navigationBarItems(
                 leading: SignOutButton(),
-                trailing: Button(action: {
-                    Task { await viewModel.addRandomMedicine() }
-                }) {
-                    Image(systemName: "plus")
+                trailing: Button("Ajouter un médicament", systemImage: "plus") {
+                    isAddingMedicine = true
                 }
+                .labelStyle(.iconOnly)
             )
+            .sheet(isPresented: $isAddingMedicine) {
+                AddMedicineView(viewModel: viewModel)
+            }
         }
         .task {
             await viewModel.loadMedicines()

@@ -53,32 +53,38 @@ final class MedicineStockViewModel {
 
     // MARK: - Write
 
-    func addRandomMedicine() async {
+    @discardableResult
+    func addMedicine(name: String, stock: Int, aisle: String) async -> Bool {
         guard let user = authService.currentUser else {
             errorMessage = MediStockError.notAuthenticated.localizedDescription
-            return
+            return false
         }
 
-        let medicine = Medicine(
-            name: "Medicine \(Int.random(in: 1...100))",
-            stock: Int.random(in: 1...100),
-            aisle: "Aisle \(Int.random(in: 1...10))"
-        )
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedAisle = aisle.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedName.isEmpty, !trimmedAisle.isEmpty, stock >= 0 else {
+            errorMessage = MediStockError.invalidData.localizedDescription
+            return false
+        }
+
+        let medicine = Medicine(name: trimmedName, stock: stock, aisle: trimmedAisle)
 
         do {
             try await medicineRepository.save(medicine)
         } catch {
             errorMessage = error.localizedDescription
-            return
+            return false
         }
 
         await recordHistory(
             medicineId: medicine.id,
             user: user,
             action: "Added \(medicine.name)",
-            details: "Added new medicine"
+            details: "Created with stock \(stock) in \(trimmedAisle)"
         )
         await loadMedicines()
+        return true
     }
 
     func updateDetails(medicineId: String, name: String, aisle: String) async {

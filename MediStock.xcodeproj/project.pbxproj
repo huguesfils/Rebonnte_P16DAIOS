@@ -55,6 +55,8 @@
 		F4DA002000000000000000AA /* MediStockErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DA000200000000000000AA /* MediStockErrorTests.swift */; };
 		F4DB001000000000000000AA /* SignOutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DB000100000000000000AA /* SignOutButton.swift */; };
 		F4DC001000000000000000AA /* MedicineHistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC000100000000000000AA /* MedicineHistorySection.swift */; };
+		F4DD001000000000000000AA /* AddMedicineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DD000100000000000000AA /* AddMedicineView.swift */; };
+		F4DD002000000000000000AA /* AddMedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DD000200000000000000AA /* AddMedicineTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +126,8 @@
 		F4DA000200000000000000AA /* MediStockErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockErrorTests.swift; sourceTree = "<group>"; };
 		F4DB000100000000000000AA /* SignOutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutButton.swift; sourceTree = "<group>"; };
 		F4DC000100000000000000AA /* MedicineHistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineHistorySection.swift; sourceTree = "<group>"; };
+		F4DD000100000000000000AA /* AddMedicineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicineView.swift; sourceTree = "<group>"; };
+		F4DD000200000000000000AA /* AddMedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,6 +202,7 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
+				F4DD000200000000000000AA /* AddMedicineTests.swift */,
 				F4DA000200000000000000AA /* MediStockErrorTests.swift */,
 				F4D9000200000000000000AA /* LoginViewModelTests.swift */,
 				F4D6000100000000000000AA /* Helpers */,
@@ -342,6 +347,7 @@
 		F4D7000400000000000000AA /* Medicines */ = {
 			isa = PBXGroup;
 			children = (
+				F4DD000100000000000000AA /* AddMedicineView.swift */,
 				F4DC000100000000000000AA /* MedicineHistorySection.swift */,
 				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
 				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
@@ -498,6 +504,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4DD001000000000000000AA /* AddMedicineView.swift in Sources */,
 				F4DC001000000000000000AA /* MedicineHistorySection.swift in Sources */,
 				F4DB001000000000000000AA /* SignOutButton.swift in Sources */,
 				F4DA001000000000000000AA /* ErrorAlertModifier.swift in Sources */,
@@ -538,6 +545,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4DD002000000000000000AA /* AddMedicineTests.swift in Sources */,
 				F4DA002000000000000000AA /* MediStockErrorTests.swift in Sources */,
 				F4D9002000000000000000AA /* LoginViewModelTests.swift in Sources */,
 				F4D5000100000000000000AA /* SessionManagerTests.swift in Sources */,

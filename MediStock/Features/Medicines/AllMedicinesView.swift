@@ -5,6 +5,7 @@ struct AllMedicinesView: View {
 
     @State private var filterText = ""
     @State private var sortOption: SortOption = .none
+    @State private var isAddingMedicine = false
 
     init(viewModel: MedicineStockViewModel) {
         self.viewModel = viewModel
@@ -45,12 +46,14 @@ struct AllMedicinesView: View {
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(
                     leading: SignOutButton(),
-                    trailing: Button(action: {
-                        Task { await viewModel.addRandomMedicine() }
-                    }) {
-                        Image(systemName: "plus")
+                    trailing: Button("Ajouter un médicament", systemImage: "plus") {
+                        isAddingMedicine = true
                     }
+                    .labelStyle(.iconOnly)
                 )
+                .sheet(isPresented: $isAddingMedicine) {
+                    AddMedicineView(viewModel: viewModel)
+                }
             }
         }
         .task {

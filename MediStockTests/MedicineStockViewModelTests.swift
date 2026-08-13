@@ -103,41 +103,6 @@ struct MedicineStockViewModelTests {
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)
     }
 
-    // MARK: - addRandomMedicine
-
-    @Test func addRandomMedicineSavesRecordsHistoryAndReloads() async {
-        let sut = makeSUT()
-
-        await sut.addRandomMedicine()
-
-        #expect(mockMedicines.savedMedicines.count == 1)
-        #expect(mockHistory.addedEntries.count == 1)
-        #expect(mockMedicines.fetchCallCount == 1)
-        #expect(sut.medicines.count == 1)
-        #expect(sut.errorMessage == nil)
-    }
-
-    @Test func addRandomMedicineWithoutUserIsRejected() async {
-        mockAuth.currentUser = nil
-        let sut = makeSUT()
-
-        await sut.addRandomMedicine()
-
-        #expect(mockMedicines.savedMedicines.isEmpty)
-        #expect(sut.errorMessage == MediStockError.notAuthenticated.localizedDescription)
-    }
-
-    @Test func addRandomMedicineFailureSkipsHistoryAndReload() async {
-        mockMedicines.errorToThrow = MediStockError.permissionDenied
-        let sut = makeSUT()
-
-        await sut.addRandomMedicine()
-
-        #expect(mockHistory.addedEntries.isEmpty)
-        #expect(mockMedicines.fetchCallCount == 0)
-        #expect(sut.errorMessage == MediStockError.permissionDenied.localizedDescription)
-    }
-
     // MARK: - Stock
 
     @Test func increaseStockAppliesOptimisticUpdateWithoutReload() async {
@@ -347,7 +312,7 @@ struct MedicineStockViewModelTests {
         mockAuth.currentUser = AppUser(id: "user-42", email: "a@b.c")
         let sut = makeSUT()
 
-        await sut.addRandomMedicine()
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
 
         #expect(mockHistory.addedEntries.first?.user == "user-42")
     }
