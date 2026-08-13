@@ -10,7 +10,9 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
+        @Bindable var session = session
+
+        return Group {
             switch session.currentScreen {
             case .loading:
                 ProgressView()
@@ -23,6 +25,7 @@ struct ContentView: View {
         .task {
             session.start()
         }
+        .errorAlert($session.errorMessage)
     }
 }
 

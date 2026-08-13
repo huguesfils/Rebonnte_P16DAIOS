@@ -21,6 +21,7 @@ struct MainTabView: View {
                     Text("All Medicines")
                 }
         }
+        .errorAlert($viewModel.errorMessage)
     }
 }
 

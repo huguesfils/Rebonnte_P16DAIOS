@@ -26,11 +26,7 @@ struct LoginView: View {
             Spacer()
         }
         .padding()
-        .alert("Erreur", isPresented: isShowingError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(viewModel.errorMessage ?? "")
-        }
+        .errorAlert($viewModel.errorMessage)
         .onChange(of: viewModel.authenticatedUser) { _, user in
             if let user {
                 session.onAuthenticated(user)
@@ -98,13 +94,6 @@ struct LoginView: View {
 
     private func submit() {
         Task { await viewModel.submit() }
-    }
-
-    private var isShowingError: Binding<Bool> {
-        Binding(
-            get: { viewModel.errorMessage != nil },
-            set: { if !$0 { viewModel.errorMessage = nil } }
-        )
     }
 }
 

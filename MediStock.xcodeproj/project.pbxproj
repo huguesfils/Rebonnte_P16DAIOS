@@ -51,6 +51,8 @@
 		F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D8000200000000000000AA /* ViewModelFactory.swift */; };
 		F4D9001000000000000000AA /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D9000100000000000000AA /* LoginViewModel.swift */; };
 		F4D9002000000000000000AA /* LoginViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D9000200000000000000AA /* LoginViewModelTests.swift */; };
+		F4DA001000000000000000AA /* ErrorAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DA000100000000000000AA /* ErrorAlertModifier.swift */; };
+		F4DA002000000000000000AA /* MediStockErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DA000200000000000000AA /* MediStockErrorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +118,8 @@
 		F4D8000200000000000000AA /* ViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactory.swift; sourceTree = "<group>"; };
 		F4D9000100000000000000AA /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		F4D9000200000000000000AA /* LoginViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModelTests.swift; sourceTree = "<group>"; };
+		F4DA000100000000000000AA /* ErrorAlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlertModifier.swift; sourceTree = "<group>"; };
+		F4DA000200000000000000AA /* MediStockErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +194,7 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
+				F4DA000200000000000000AA /* MediStockErrorTests.swift */,
 				F4D9000200000000000000AA /* LoginViewModelTests.swift */,
 				F4D6000100000000000000AA /* Helpers */,
 				F4D6000200000000000000AA /* Mocks */,
@@ -266,6 +271,7 @@
 		F4D3000600000000000000AA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				F4DA000900000000000000AA /* Views */,
 				F4D3000700000000000000AA /* Models */,
 			);
 			path = Shared;
@@ -338,6 +344,14 @@
 				F4D1001400000000000000AA /* SortOption.swift */,
 			);
 			path = Medicines;
+			sourceTree = "<group>";
+		};
+		F4DA000900000000000000AA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F4DA000100000000000000AA /* ErrorAlertModifier.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -478,6 +492,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4DA001000000000000000AA /* ErrorAlertModifier.swift in Sources */,
 				F4D9001000000000000000AA /* LoginViewModel.swift in Sources */,
 				F4D8001000000000000000AA /* AppScreen.swift in Sources */,
 				F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */,
@@ -515,6 +530,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4DA002000000000000000AA /* MediStockErrorTests.swift in Sources */,
 				F4D9002000000000000000AA /* LoginViewModelTests.swift in Sources */,
 				F4D5000100000000000000AA /* SessionManagerTests.swift in Sources */,
 				F4D5000200000000000000AA /* Stubs.swift in Sources */,
