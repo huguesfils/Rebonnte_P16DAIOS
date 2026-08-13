@@ -51,24 +51,6 @@ final class SessionManager {
         }
     }
 
-    // MARK: - Transitional: moves to LoginViewModel in MEDI-28
-
-    func signIn(email: String, password: String) async {
-        do {
-            onAuthenticated(try await authService.signIn(email: email, password: password))
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
-    func signUp(email: String, password: String) async {
-        do {
-            onAuthenticated(try await authService.signUp(email: email, password: password))
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
     // MARK: - Private
 
     private func resolveScreen() {

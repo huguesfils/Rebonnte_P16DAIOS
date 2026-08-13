@@ -49,6 +49,8 @@
 		F4D5000500000000000000AA /* MockAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000500000000000000AA /* MockAuthService.swift */; };
 		F4D8001000000000000000AA /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D8000100000000000000AA /* AppScreen.swift */; };
 		F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D8000200000000000000AA /* ViewModelFactory.swift */; };
+		F4D9001000000000000000AA /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D9000100000000000000AA /* LoginViewModel.swift */; };
+		F4D9002000000000000000AA /* LoginViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D9000200000000000000AA /* LoginViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,8 @@
 		F4D4000500000000000000AA /* MockAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthService.swift; sourceTree = "<group>"; };
 		F4D8000100000000000000AA /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
 		F4D8000200000000000000AA /* ViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactory.swift; sourceTree = "<group>"; };
+		F4D9000100000000000000AA /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		F4D9000200000000000000AA /* LoginViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +190,7 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
+				F4D9000200000000000000AA /* LoginViewModelTests.swift */,
 				F4D6000100000000000000AA /* Helpers */,
 				F4D6000200000000000000AA /* Mocks */,
 				F4D4000100000000000000AA /* SessionManagerTests.swift */,
@@ -309,6 +314,7 @@
 		F4D7000200000000000000AA /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				F4D9000100000000000000AA /* LoginViewModel.swift */,
 				53E0D8D72C06097900DE1134 /* LoginView.swift */,
 			);
 			path = Auth;
@@ -472,6 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4D9001000000000000000AA /* LoginViewModel.swift in Sources */,
 				F4D8001000000000000000AA /* AppScreen.swift in Sources */,
 				F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */,
 				F4D2000100000000000000AA /* AppEnvironment.swift in Sources */,
@@ -508,6 +515,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4D9002000000000000000AA /* LoginViewModelTests.swift in Sources */,
 				F4D5000100000000000000AA /* SessionManagerTests.swift in Sources */,
 				F4D5000200000000000000AA /* Stubs.swift in Sources */,
 				F4D5000300000000000000AA /* MockMedicineRepository.swift in Sources */,

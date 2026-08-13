@@ -15,6 +15,13 @@ struct ViewModelFactory {
         self.authService = authService
     }
 
+    // MARK: - Auth
+
+    @MainActor
+    func makeLoginViewModel() -> LoginViewModel {
+        LoginViewModel(authService: authService)
+    }
+
     // MARK: - Medicines
 
     @MainActor

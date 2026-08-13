@@ -95,46 +95,4 @@ struct SessionManagerTests {
         #expect(sut.currentScreen == .main)
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)
     }
-
-    // MARK: - Sign in / up
-
-    @Test func signInSuccessRoutesToMain() async {
-        let sut = makeSUT()
-
-        await sut.signIn(email: "a@b.c", password: "password")
-
-        #expect(sut.currentUser?.email == "a@b.c")
-        #expect(sut.currentScreen == .main)
-        #expect(sut.errorMessage == nil)
-    }
-
-    @Test func signInFailureStaysOnLogin() async {
-        mockAuth.errorToThrow = MediStockError.invalidCredentials
-        let sut = makeSUT()
-
-        await sut.signIn(email: "a@b.c", password: "wrong")
-
-        #expect(sut.currentUser == nil)
-        #expect(sut.currentScreen != .main)
-        #expect(sut.errorMessage == MediStockError.invalidCredentials.localizedDescription)
-    }
-
-    @Test func signUpSuccessRoutesToMain() async {
-        let sut = makeSUT()
-
-        await sut.signUp(email: "new@b.c", password: "password")
-
-        #expect(sut.currentUser?.email == "new@b.c")
-        #expect(sut.currentScreen == .main)
-    }
-
-    @Test func signUpFailureSurfacesError() async {
-        mockAuth.errorToThrow = MediStockError.emailAlreadyInUse
-        let sut = makeSUT()
-
-        await sut.signUp(email: "used@b.c", password: "password")
-
-        #expect(sut.currentUser == nil)
-        #expect(sut.errorMessage == MediStockError.emailAlreadyInUse.localizedDescription)
-    }
 }

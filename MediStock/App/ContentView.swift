@@ -15,7 +15,7 @@ struct ContentView: View {
             case .loading:
                 ProgressView()
             case .login:
-                LoginView()
+                LoginView(container: container)
             case .main:
                 MainTabView(container: container)
             }
