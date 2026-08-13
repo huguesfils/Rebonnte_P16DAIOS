@@ -26,10 +26,29 @@ final class MockMedicineRepository: MedicineRepository, @unchecked Sendable {
         savedMedicines.append(medicine)
     }
 
-    func updateStock(medicineId: String, newStock: Int) async throws {
+    func adjustStock(medicineId: String, by amount: Int) async throws -> StockChange {
+        try await commitStockChange(medicineId: medicineId) { $0 + amount }
+    }
+
+    func setStock(medicineId: String, to newStock: Int) async throws -> StockChange {
+        try await commitStockChange(medicineId: medicineId) { _ in newStock }
+    }
+
+    private func commitStockChange(medicineId: String, resolve: (Int) -> Int) async throws -> StockChange {
         if let errorToThrow { throw errorToThrow }
-        storedMedicines[medicineId]?.stock = newStock
-        updatedStocks.append((medicineId, newStock))
+
+        guard let previous = storedMedicines[medicineId]?.stock else {
+            throw MediStockError.medicineNotFound
+        }
+
+        let resolved = resolve(previous)
+        guard resolved >= 0 else { throw MediStockError.negativeStock }
+
+        if resolved != previous {
+            storedMedicines[medicineId]?.stock = resolved
+            updatedStocks.append((medicineId, resolved))
+        }
+        return StockChange(previous: previous, new: resolved)
     }
 
     func delete(medicineId: String) async throws {

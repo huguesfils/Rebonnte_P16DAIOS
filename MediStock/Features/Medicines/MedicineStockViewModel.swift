@@ -123,20 +123,23 @@ final class MedicineStockViewModel {
     }
 
     func increaseStock(medicineId: String) async {
-        await updateStock(medicineId: medicineId, by: 1)
+        await adjustStock(medicineId: medicineId, by: 1)
     }
 
     func decreaseStock(medicineId: String) async {
-        await updateStock(medicineId: medicineId, by: -1)
+        await adjustStock(medicineId: medicineId, by: -1)
+    }
+
+    private func adjustStock(medicineId: String, by amount: Int) async {
+        await commitStockChange(medicineId: medicineId) { repository in
+            try await repository.adjustStock(medicineId: medicineId, by: amount)
+        }
     }
 
     func setStock(medicineId: String, to newStock: Int) async {
-        guard let current = medicine(withId: medicineId) else {
-            errorMessage = MediStockError.medicineNotFound.localizedDescription
-            return
+        await commitStockChange(medicineId: medicineId) { repository in
+            try await repository.setStock(medicineId: medicineId, to: newStock)
         }
-
-        await updateStock(medicineId: medicineId, by: newStock - current.stock)
     }
 
     @discardableResult
@@ -178,7 +181,10 @@ final class MedicineStockViewModel {
 
     // MARK: - Private
 
-    private func updateStock(medicineId: String, by amount: Int) async {
+    private func commitStockChange(
+        medicineId: String,
+        write: (MedicineRepository) async throws -> StockChange
+    ) async {
         guard let user = authService.currentUser else {
             errorMessage = MediStockError.notAuthenticated.localizedDescription
             return
@@ -189,27 +195,25 @@ final class MedicineStockViewModel {
             return
         }
 
-        guard amount != 0 else { return }
-
-        let previousStock = current.stock
-        let newStock = previousStock + amount
-
+        let change: StockChange
         do {
-            try await medicineRepository.updateStock(medicineId: medicineId, newStock: newStock)
+            change = try await write(medicineRepository)
         } catch {
             errorMessage = error.localizedDescription
             return
         }
 
+        guard change.delta != 0 else { return }
+
         var updated = current
-        updated.stock = newStock
+        updated.stock = change.new
         apply(updated)
 
         await recordHistory(
             medicineId: medicineId,
             user: user,
-            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(current.name) by \(abs(amount))",
-            details: "Stock changed from \(previousStock) to \(newStock)"
+            action: "\(change.delta > 0 ? "Increased" : "Decreased") stock of \(current.name) by \(abs(change.delta))",
+            details: "Stock changed from \(change.previous) to \(change.new)"
         )
     }
 

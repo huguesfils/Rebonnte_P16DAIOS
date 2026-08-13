@@ -198,6 +198,33 @@ struct MedicineStockViewModelTests {
         #expect(sut.errorMessage == MediStockError.medicineNotFound.localizedDescription)
     }
 
+    @Test func adjustmentIsRelativeSoAConcurrentChangeIsNotLost() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 10)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        mockMedicines.storedMedicines["1"]?.stock = 20
+
+        await sut.increaseStock(medicineId: "1")
+
+        #expect(mockMedicines.storedMedicines["1"]?.stock == 21)
+        #expect(sut.medicines.first?.stock == 21)
+        #expect(mockHistory.addedEntries.first?.details == "Stock changed from 20 to 21")
+    }
+
+    @Test func stockCannotGoNegative() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", stock: 0)]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.decreaseStock(medicineId: "1")
+
+        #expect(mockMedicines.storedMedicines["1"]?.stock == 0)
+        #expect(sut.medicines.first?.stock == 0)
+        #expect(mockHistory.addedEntries.isEmpty)
+        #expect(sut.errorMessage == MediStockError.negativeStock.localizedDescription)
+    }
+
     // MARK: - setStock
 
     @Test func setStockAppliesAbsoluteValue() async {

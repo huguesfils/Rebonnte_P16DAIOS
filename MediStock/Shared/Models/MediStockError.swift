@@ -4,6 +4,7 @@ enum MediStockError: LocalizedError, Equatable {
     case notAuthenticated
     case medicineNotFound
     case invalidData
+    case negativeStock
     case networkUnavailable
     case permissionDenied
     case emailAlreadyInUse
@@ -20,6 +21,8 @@ enum MediStockError: LocalizedError, Equatable {
             "Ce médicament est introuvable."
         case .invalidData:
             "Les données reçues sont invalides."
+        case .negativeStock:
+            "Le stock ne peut pas être négatif."
         case .networkUnavailable:
             "Erreur de connexion. Vérifiez votre accès internet."
         case .permissionDenied:

@@ -31,12 +31,12 @@ struct FirestoreMedicineRepository: MedicineRepository {
         }
     }
 
-    func updateStock(medicineId: String, newStock: Int) async throws {
-        do {
-            try await collection.document(medicineId).updateData(["stock": newStock])
-        } catch {
-            throw FirestoreErrorMapper.map(error)
-        }
+    func adjustStock(medicineId: String, by amount: Int) async throws -> StockChange {
+        try await commitStockChange(medicineId: medicineId) { $0 + amount }
+    }
+
+    func setStock(medicineId: String, to newStock: Int) async throws -> StockChange {
+        try await commitStockChange(medicineId: medicineId) { _ in newStock }
     }
 
     func delete(medicineId: String) async throws {
@@ -46,6 +46,54 @@ struct FirestoreMedicineRepository: MedicineRepository {
             throw FirestoreErrorMapper.map(error)
         }
     }
+
+    // MARK: - Atomic stock
+
+    private func commitStockChange(
+        medicineId: String,
+        resolve: @escaping @Sendable (Int) -> Int
+    ) async throws -> StockChange {
+        let reference = collection.document(medicineId)
+        let firestore = Firestore.firestore()
+
+        let outcome: Any?
+        do {
+            outcome = try await firestore.runTransaction { transaction, _ -> Any? in
+                guard let snapshot = try? transaction.getDocument(reference),
+                      let previous = snapshot.data()?["stock"] as? Int else {
+                    return [Self.notFoundKey: true]
+                }
+
+                let resolved = resolve(previous)
+                guard resolved >= 0 else { return [Self.negativeKey: true] }
+
+                if resolved != previous {
+                    transaction.updateData(["stock": resolved], forDocument: reference)
+                }
+                return [Self.previousKey: previous, Self.newKey: resolved]
+            }
+        } catch {
+            throw FirestoreErrorMapper.map(error)
+        }
+
+        guard let payload = outcome as? [String: Any] else {
+            throw MediStockError.invalidData
+        }
+        if payload[Self.notFoundKey] != nil { throw MediStockError.medicineNotFound }
+        if payload[Self.negativeKey] != nil { throw MediStockError.negativeStock }
+
+        guard let previous = payload[Self.previousKey] as? Int,
+              let new = payload[Self.newKey] as? Int else {
+            throw MediStockError.invalidData
+        }
+
+        return StockChange(previous: previous, new: new)
+    }
+
+    private static let notFoundKey = "notFound"
+    private static let negativeKey = "negative"
+    private static let previousKey = "previous"
+    private static let newKey = "new"
 
     // MARK: - Mapping
 

@@ -11,7 +11,13 @@ struct PreviewMedicineRepository: MedicineRepository {
 
     func fetchMedicines() async throws -> [Medicine] { medicines }
     func save(_ medicine: Medicine) async throws {}
-    func updateStock(medicineId: String, newStock: Int) async throws {}
+    func adjustStock(medicineId: String, by amount: Int) async throws -> StockChange {
+        StockChange(previous: 0, new: amount)
+    }
+
+    func setStock(medicineId: String, to newStock: Int) async throws -> StockChange {
+        StockChange(previous: 0, new: newStock)
+    }
     func delete(medicineId: String) async throws {}
 }
 
