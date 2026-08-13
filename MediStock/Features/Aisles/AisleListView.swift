@@ -17,11 +17,14 @@ struct AisleListView: View {
                 }
             }
             .navigationBarTitle("Aisles")
-            .navigationBarItems(trailing: Button(action: {
-                Task { await viewModel.addRandomMedicine() }
-            }) {
-                Image(systemName: "plus")
-            })
+            .navigationBarItems(
+                leading: SignOutButton(),
+                trailing: Button(action: {
+                    Task { await viewModel.addRandomMedicine() }
+                }) {
+                    Image(systemName: "plus")
+                }
+            )
         }
         .task {
             await viewModel.loadMedicines()
@@ -33,6 +36,7 @@ struct AisleListView: View {
 struct AisleListView_Previews: PreviewProvider {
     static var previews: some View {
         AisleListView(viewModel: .preview)
+            .environment(DIContainer.preview.sessionManager)
     }
 }
 #endif

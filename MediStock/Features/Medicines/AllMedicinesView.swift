@@ -43,11 +43,14 @@ struct AllMedicinesView: View {
                     }
                 }
                 .navigationBarTitle("All Medicines")
-                .navigationBarItems(trailing: Button(action: {
-                    Task { await viewModel.addRandomMedicine() }
-                }) {
-                    Image(systemName: "plus")
-                })
+                .navigationBarItems(
+                    leading: SignOutButton(),
+                    trailing: Button(action: {
+                        Task { await viewModel.addRandomMedicine() }
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                )
             }
         }
         .task {
@@ -79,6 +82,7 @@ struct AllMedicinesView: View {
 struct AllMedicinesView_Previews: PreviewProvider {
     static var previews: some View {
         AllMedicinesView(viewModel: .preview)
+            .environment(DIContainer.preview.sessionManager)
     }
 }
 #endif
