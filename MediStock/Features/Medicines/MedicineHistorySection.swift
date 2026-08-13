@@ -30,7 +30,7 @@ private struct MedicineHistoryRow: View {
         VStack(alignment: .leading, spacing: 5) {
             Text(entry.action)
                 .font(.headline)
-            Text("User: \(entry.user)")
+            Text("User: \(entry.displayedUser)")
                 .font(.subheadline)
             Text("Date: \(entry.timestamp.formatted())")
                 .font(.subheadline)

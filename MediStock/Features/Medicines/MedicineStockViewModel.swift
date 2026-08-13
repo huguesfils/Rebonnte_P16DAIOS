@@ -222,6 +222,7 @@ final class MedicineStockViewModel {
         let entry = HistoryEntry(
             medicineId: medicineId,
             user: user.id,
+            userEmail: user.email,
             action: action,
             details: details
         )

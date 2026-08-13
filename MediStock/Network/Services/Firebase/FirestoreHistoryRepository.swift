@@ -25,13 +25,16 @@ struct FirestoreHistoryRepository: HistoryRepository {
 
     func addEntry(_ entry: HistoryEntry) async throws {
         do {
-            try await collection.document(entry.id).setData([
+            var data: [String: Any] = [
                 "medicineId": entry.medicineId,
                 "user": entry.user,
                 "action": entry.action,
                 "details": entry.details,
                 "timestamp": Timestamp(date: entry.timestamp)
-            ])
+            ]
+            data["userEmail"] = entry.userEmail
+
+            try await collection.document(entry.id).setData(data)
         } catch {
             throw FirestoreErrorMapper.map(error)
         }
@@ -52,6 +55,7 @@ struct FirestoreHistoryRepository: HistoryRepository {
             id: document.documentID,
             medicineId: medicineId,
             user: user,
+            userEmail: data["userEmail"] as? String,
             action: action,
             details: details,
             timestamp: timestamp

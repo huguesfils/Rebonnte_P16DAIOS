@@ -389,4 +389,33 @@ struct MedicineStockViewModelTests {
 
         #expect(mockHistory.addedEntries.first?.user == "user-42")
     }
+
+    @Test func historyEntryCarriesAuthenticatedUserEmail() async {
+        mockAuth.currentUser = AppUser(id: "user-42", email: "operateur@medistock.app")
+        let sut = makeSUT()
+
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+
+        let entry = mockHistory.addedEntries.first
+        #expect(entry?.userEmail == "operateur@medistock.app")
+        #expect(entry?.displayedUser == "operateur@medistock.app")
+    }
+
+    @Test func historyEntryFallsBackToIdWhenEmailIsMissing() async {
+        mockAuth.currentUser = AppUser(id: "user-42", email: nil)
+        let sut = makeSUT()
+
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+
+        let entry = mockHistory.addedEntries.first
+        #expect(entry?.userEmail == nil)
+        #expect(entry?.displayedUser == "user-42")
+    }
+
+    @Test("Entrée existante sans email : repli sur l'identifiant", arguments: [nil, ""])
+    func legacyEntriesFallBackToId(email: String?) {
+        let entry = HistoryEntry.stub(user: "legacy-uid", userEmail: email)
+
+        #expect(entry.displayedUser == "legacy-uid")
+    }
 }

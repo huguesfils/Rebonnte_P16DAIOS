@@ -17,6 +17,7 @@ extension HistoryEntry {
         id: String = "history-1",
         medicineId: String = "medicine-1",
         user: String = "test-user",
+        userEmail: String? = "test@medistock.app",
         action: String = "Added Doliprane",
         details: String = "Added new medicine",
         timestamp: Date = Date()
@@ -25,6 +26,7 @@ extension HistoryEntry {
             id: id,
             medicineId: medicineId,
             user: user,
+            userEmail: userEmail,
             action: action,
             details: details,
             timestamp: timestamp
