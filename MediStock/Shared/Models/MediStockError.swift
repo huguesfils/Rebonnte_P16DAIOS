@@ -1,0 +1,39 @@
+import Foundation
+
+enum MediStockError: LocalizedError, Equatable {
+    case notAuthenticated
+    case medicineNotFound
+    case invalidData
+    case networkUnavailable
+    case permissionDenied
+    case emailAlreadyInUse
+    case weakPassword
+    case invalidCredentials
+    case invalidEmail
+    case unknown(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .notAuthenticated:
+            "Vous devez être connecté pour effectuer cette action."
+        case .medicineNotFound:
+            "Ce médicament est introuvable."
+        case .invalidData:
+            "Les données reçues sont invalides."
+        case .networkUnavailable:
+            "Erreur de connexion. Vérifiez votre accès internet."
+        case .permissionDenied:
+            "Vous n'avez pas les droits nécessaires pour cette action."
+        case .emailAlreadyInUse:
+            "Cet email est déjà utilisé."
+        case .weakPassword:
+            "Le mot de passe est trop faible (minimum 6 caractères)."
+        case .invalidCredentials:
+            "Email ou mot de passe incorrect."
+        case .invalidEmail:
+            "L'adresse email est invalide."
+        case .unknown(let message):
+            message
+        }
+    }
+}

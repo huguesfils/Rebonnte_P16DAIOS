@@ -1,24 +1,34 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var session: SessionStore
+    @Environment(SessionViewModel.self) private var session
+
+    private let container: DIContainer
+
+    init(container: DIContainer) {
+        self.container = container
+    }
 
     var body: some View {
         Group {
-            if session.session != nil {
-                MainTabView()
+            if session.isAuthenticated {
+                MainTabView(container: container)
             } else {
                 LoginView()
             }
         }
-        .onAppear {
-            session.listen()
+        .task {
+            session.start()
         }
     }
 }
 
+#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environmentObject(SessionStore())
+        let container = DIContainer.preview
+        return ContentView(container: container)
+            .environment(container.sessionViewModel)
     }
 }
+#endif

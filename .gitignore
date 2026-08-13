@@ -35,6 +35,9 @@ Package.resolved.bak
 # Test results
 *.xcresult
 
+# Claude Code (local settings + RPA working artifacts)
+.claude/
+
 # macOS
 .DS_Store
 .AppleDouble

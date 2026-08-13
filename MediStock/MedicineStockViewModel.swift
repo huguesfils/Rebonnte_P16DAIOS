@@ -1,113 +1,178 @@
 import Foundation
-import FirebaseFirestore
 
-class MedicineStockViewModel: ObservableObject {
-    @Published var medicines: [Medicine] = []
-    @Published var aisles: [String] = []
-    @Published var history: [HistoryEntry] = []
-    private var db = Firestore.firestore()
+@Observable
+@MainActor
+final class MedicineStockViewModel {
+    private(set) var medicines: [Medicine] = []
+    private(set) var history: [HistoryEntry] = []
+    var errorMessage: String?
 
-    func fetchMedicines() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                self.medicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-            }
-        }
+    var aisles: [String] {
+        Array(Set(medicines.map(\.aisle))).sorted()
     }
 
-    func fetchAisles() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                let allMedicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
-            }
-        }
+    private let medicineRepository: MedicineRepository
+    private let historyRepository: HistoryRepository
+    private let authService: AuthService
+
+    init(
+        medicineRepository: MedicineRepository,
+        historyRepository: HistoryRepository,
+        authService: AuthService
+    ) {
+        self.medicineRepository = medicineRepository
+        self.historyRepository = historyRepository
+        self.authService = authService
     }
 
-    func addRandomMedicine(user: String) {
-        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
+    // MARK: - Read
+
+    func loadMedicines() async {
         do {
-            try db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
-            addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
-        } catch let error {
-            print("Error adding document: \(error)")
+            medicines = try await medicineRepository.fetchMedicines()
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
-    func deleteMedicines(at offsets: IndexSet) {
-        offsets.map { medicines[$0] }.forEach { medicine in
-            if let id = medicine.id {
-                db.collection("medicines").document(id).delete { error in
-                    if let error = error {
-                        print("Error removing document: \(error)")
-                    }
-                }
-            }
+    func loadHistory(for medicine: Medicine) async {
+        do {
+            history = try await historyRepository.fetchHistory(medicineId: medicine.id)
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
-    func increaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: 1, user: user)
+    func medicines(inAisle aisle: String) -> [Medicine] {
+        medicines.filter { $0.aisle == aisle }
     }
 
-    func decreaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: -1, user: user)
+    // MARK: - Write
+
+    func addRandomMedicine() async {
+        guard let user = authService.currentUser else {
+            errorMessage = MediStockError.notAuthenticated.localizedDescription
+            return
+        }
+
+        let medicine = Medicine(
+            name: "Medicine \(Int.random(in: 1...100))",
+            stock: Int.random(in: 1...100),
+            aisle: "Aisle \(Int.random(in: 1...10))"
+        )
+
+        do {
+            try await medicineRepository.save(medicine)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
+        }
+
+        await recordHistory(
+            medicineId: medicine.id,
+            user: user,
+            action: "Added \(medicine.name)",
+            details: "Added new medicine"
+        )
+        await loadMedicines()
     }
 
-    private func updateStock(_ medicine: Medicine, by amount: Int, user: String) {
-        guard let id = medicine.id else { return }
+    func updateMedicine(_ medicine: Medicine) async {
+        guard let user = authService.currentUser else {
+            errorMessage = MediStockError.notAuthenticated.localizedDescription
+            return
+        }
+
+        do {
+            try await medicineRepository.save(medicine)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
+        }
+
+        if let index = medicines.firstIndex(where: { $0.id == medicine.id }) {
+            medicines[index] = medicine
+        }
+
+        await recordHistory(
+            medicineId: medicine.id,
+            user: user,
+            action: "Updated \(medicine.name)",
+            details: "Updated medicine details"
+        )
+    }
+
+    func increaseStock(_ medicine: Medicine) async {
+        await updateStock(medicine, by: 1)
+    }
+
+    func decreaseStock(_ medicine: Medicine) async {
+        await updateStock(medicine, by: -1)
+    }
+
+    func delete(_ medicine: Medicine) async {
+        guard let user = authService.currentUser else {
+            errorMessage = MediStockError.notAuthenticated.localizedDescription
+            return
+        }
+
+        do {
+            try await medicineRepository.delete(medicineId: medicine.id)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
+        }
+
+        await recordHistory(
+            medicineId: medicine.id,
+            user: user,
+            action: "Deleted \(medicine.name)",
+            details: "Removed medicine"
+        )
+        await loadMedicines()
+    }
+
+    // MARK: - Private
+
+    private func updateStock(_ medicine: Medicine, by amount: Int) async {
+        guard let user = authService.currentUser else {
+            errorMessage = MediStockError.notAuthenticated.localizedDescription
+            return
+        }
+
         let newStock = medicine.stock + amount
-        db.collection("medicines").document(id).updateData([
-            "stock": newStock
-        ]) { error in
-            if let error = error {
-                print("Error updating stock: \(error)")
-            } else {
-                if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                    self.medicines[index].stock = newStock
-                }
-                self.addHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)", user: user, medicineId: id, details: "Stock changed from \(medicine.stock - amount) to \(newStock)")
-            }
-        }
-    }
 
-    func updateMedicine(_ medicine: Medicine, user: String) {
-        guard let id = medicine.id else { return }
         do {
-            try db.collection("medicines").document(id).setData(from: medicine)
-            addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
-        } catch let error {
-            print("Error updating document: \(error)")
+            try await medicineRepository.updateStock(medicineId: medicine.id, newStock: newStock)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
         }
+
+        if let index = medicines.firstIndex(where: { $0.id == medicine.id }) {
+            medicines[index].stock = newStock
+        }
+
+        await recordHistory(
+            medicineId: medicine.id,
+            user: user,
+            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)",
+            details: "Stock changed from \(medicine.stock) to \(newStock)"
+        )
     }
 
-    private func addHistory(action: String, user: String, medicineId: String, details: String) {
-        let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
+    private func recordHistory(medicineId: String, user: AppUser, action: String, details: String) async {
+        let entry = HistoryEntry(
+            medicineId: medicineId,
+            user: user.id,
+            action: action,
+            details: details
+        )
+
         do {
-            try db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
-        } catch let error {
-            print("Error adding history: \(error)")
-        }
-    }
-
-    func fetchHistory(for medicine: Medicine) {
-        guard let medicineId = medicine.id else { return }
-        db.collection("history").whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting history: \(error)")
-            } else {
-                self.history = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: HistoryEntry.self)
-                } ?? []
-            }
+            try await historyRepository.addEntry(entry)
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }

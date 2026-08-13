@@ -11,7 +11,7 @@
 		53E0D8992C06084700DE1134 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8982C06084700DE1134 /* ContentView.swift */; };
 		53E0D89B2C06084900DE1134 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E0D89A2C06084900DE1134 /* Assets.xcassets */; };
 		53E0D89E2C06084900DE1134 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E0D89D2C06084900DE1134 /* Preview Assets.xcassets */; };
-		53E0D8A82C06084900DE1134 /* MediStockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8A72C06084900DE1134 /* MediStockTests.swift */; };
+		53E0D8A82C06084900DE1134 /* MedicineStockViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8A72C06084900DE1134 /* MedicineStockViewModelTests.swift */; };
 		53E0D8B22C06084900DE1134 /* MediStockUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8B12C06084900DE1134 /* MediStockUITests.swift */; };
 		53E0D8B42C06084900DE1134 /* MediStockUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */; };
 		53E0D8C82C06092E00DE1134 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 53E0D8C72C06092E00DE1134 /* FirebaseAuth */; };
@@ -20,7 +20,7 @@
 		53E0D8DA2C06098F00DE1134 /* MedicineListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8D92C06098F00DE1134 /* MedicineListView.swift */; };
 		53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DB2C06099C00DE1134 /* Medicine.swift */; };
 		53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */; };
-		53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DF2C0609B900DE1134 /* SessionStore.swift */; };
+		53E0D8E02C0609B900DE1134 /* SessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */; };
 		53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */; };
 		53E0D8E62C066F4100DE1134 /* AisleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E52C066F4100DE1134 /* AisleListView.swift */; };
 		53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */; };
@@ -28,6 +28,25 @@
 		53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8EB2C06717200DE1134 /* MainTabView.swift */; };
 		53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */; };
 		F30003393024BCC80025EFCA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F30003383024BCC80025EFCA /* GoogleService-Info.plist */; };
+		F4D2000100000000000000AA /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000100000000000000AA /* AppEnvironment.swift */; };
+		F4D2000200000000000000AA /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000200000000000000AA /* DIContainer.swift */; };
+		F4D2000300000000000000AA /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000300000000000000AA /* PreviewSupport.swift */; };
+		F4D2000400000000000000AA /* MedicineRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000400000000000000AA /* MedicineRepository.swift */; };
+		F4D2000500000000000000AA /* HistoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000500000000000000AA /* HistoryRepository.swift */; };
+		F4D2000600000000000000AA /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000600000000000000AA /* AuthService.swift */; };
+		F4D2000700000000000000AA /* FirestoreMedicineRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000700000000000000AA /* FirestoreMedicineRepository.swift */; };
+		F4D2000800000000000000AA /* FirestoreHistoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000800000000000000AA /* FirestoreHistoryRepository.swift */; };
+		F4D2000900000000000000AA /* FirebaseAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1000900000000000000AA /* FirebaseAuthService.swift */; };
+		F4D2001000000000000000AA /* FirebaseAuthStateObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001000000000000000AA /* FirebaseAuthStateObservation.swift */; };
+		F4D2001100000000000000AA /* FirestoreErrorMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001100000000000000AA /* FirestoreErrorMapper.swift */; };
+		F4D2001200000000000000AA /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001200000000000000AA /* AppUser.swift */; };
+		F4D2001300000000000000AA /* MediStockError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001300000000000000AA /* MediStockError.swift */; };
+		F4D2001400000000000000AA /* SortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001400000000000000AA /* SortOption.swift */; };
+		F4D5000100000000000000AA /* SessionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000100000000000000AA /* SessionViewModelTests.swift */; };
+		F4D5000200000000000000AA /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000200000000000000AA /* Stubs.swift */; };
+		F4D5000300000000000000AA /* MockMedicineRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000300000000000000AA /* MockMedicineRepository.swift */; };
+		F4D5000400000000000000AA /* MockHistoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000400000000000000AA /* MockHistoryRepository.swift */; };
+		F4D5000500000000000000AA /* MockAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000500000000000000AA /* MockAuthService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +73,7 @@
 		53E0D89A2C06084900DE1134 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		53E0D89D2C06084900DE1134 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		53E0D8A72C06084900DE1134 /* MediStockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockTests.swift; sourceTree = "<group>"; };
+		53E0D8A72C06084900DE1134 /* MedicineStockViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModelTests.swift; sourceTree = "<group>"; };
 		53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8B12C06084900DE1134 /* MediStockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITests.swift; sourceTree = "<group>"; };
 		53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -62,7 +81,7 @@
 		53E0D8D92C06098F00DE1134 /* MedicineListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineListView.swift; sourceTree = "<group>"; };
 		53E0D8DB2C06099C00DE1134 /* Medicine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medicine.swift; sourceTree = "<group>"; };
 		53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModel.swift; sourceTree = "<group>"; };
-		53E0D8DF2C0609B900DE1134 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionViewModel.swift; sourceTree = "<group>"; };
 		53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		53E0D8E52C066F4100DE1134 /* AisleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleListView.swift; sourceTree = "<group>"; };
 		53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineDetailView.swift; sourceTree = "<group>"; };
@@ -70,6 +89,25 @@
 		53E0D8EB2C06717200DE1134 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMedicinesView.swift; sourceTree = "<group>"; };
 		F30003383024BCC80025EFCA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F4D1000100000000000000AA /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		F4D1000200000000000000AA /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
+		F4D1000300000000000000AA /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
+		F4D1000400000000000000AA /* MedicineRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineRepository.swift; sourceTree = "<group>"; };
+		F4D1000500000000000000AA /* HistoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRepository.swift; sourceTree = "<group>"; };
+		F4D1000600000000000000AA /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		F4D1000700000000000000AA /* FirestoreMedicineRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreMedicineRepository.swift; sourceTree = "<group>"; };
+		F4D1000800000000000000AA /* FirestoreHistoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreHistoryRepository.swift; sourceTree = "<group>"; };
+		F4D1000900000000000000AA /* FirebaseAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthService.swift; sourceTree = "<group>"; };
+		F4D1001000000000000000AA /* FirebaseAuthStateObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthStateObservation.swift; sourceTree = "<group>"; };
+		F4D1001100000000000000AA /* FirestoreErrorMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreErrorMapper.swift; sourceTree = "<group>"; };
+		F4D1001200000000000000AA /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
+		F4D1001300000000000000AA /* MediStockError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockError.swift; sourceTree = "<group>"; };
+		F4D1001400000000000000AA /* SortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOption.swift; sourceTree = "<group>"; };
+		F4D4000100000000000000AA /* SessionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionViewModelTests.swift; sourceTree = "<group>"; };
+		F4D4000200000000000000AA /* Stubs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stubs.swift; sourceTree = "<group>"; };
+		F4D4000300000000000000AA /* MockMedicineRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMedicineRepository.swift; sourceTree = "<group>"; };
+		F4D4000400000000000000AA /* MockHistoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHistoryRepository.swift; sourceTree = "<group>"; };
+		F4D4000500000000000000AA /* MockAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,19 +160,21 @@
 		53E0D8952C06084700DE1134 /* MediStock */ = {
 			isa = PBXGroup;
 			children = (
+				F4D3000100000000000000AA /* App */,
+				F4D3000200000000000000AA /* Network */,
+				F4D3000600000000000000AA /* Shared */,
+				F4D1001400000000000000AA /* SortOption.swift */,
 				53E0D8962C06084700DE1134 /* MediStockApp.swift */,
 				53E0D8982C06084700DE1134 /* ContentView.swift */,
 				53E0D89A2C06084900DE1134 /* Assets.xcassets */,
 				53E0D89C2C06084900DE1134 /* Preview Content */,
 				53E0D8D72C06097900DE1134 /* LoginView.swift */,
 				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
-				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
 				53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */,
-				53E0D8DF2C0609B900DE1134 /* SessionStore.swift */,
+				53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */,
 				53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */,
 				53E0D8E52C066F4100DE1134 /* AisleListView.swift */,
 				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
-				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
 				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
 				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
 				F30003383024BCC80025EFCA /* GoogleService-Info.plist */,
@@ -153,7 +193,10 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
-				53E0D8A72C06084900DE1134 /* MediStockTests.swift */,
+				F4D6000100000000000000AA /* Helpers */,
+				F4D6000200000000000000AA /* Mocks */,
+				F4D4000100000000000000AA /* SessionViewModelTests.swift */,
+				53E0D8A72C06084900DE1134 /* MedicineStockViewModelTests.swift */,
 			);
 			path = MediStockTests;
 			sourceTree = "<group>";
@@ -165,6 +208,92 @@
 				53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */,
 			);
 			path = MediStockUITests;
+			sourceTree = "<group>";
+		};
+		F4D3000100000000000000AA /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1000100000000000000AA /* AppEnvironment.swift */,
+				F4D1000200000000000000AA /* DIContainer.swift */,
+				F4D1000300000000000000AA /* PreviewSupport.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F4D3000200000000000000AA /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				F4D3000300000000000000AA /* Protocols */,
+				F4D3000400000000000000AA /* Services */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		F4D3000300000000000000AA /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1000400000000000000AA /* MedicineRepository.swift */,
+				F4D1000500000000000000AA /* HistoryRepository.swift */,
+				F4D1000600000000000000AA /* AuthService.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		F4D3000400000000000000AA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F4D3000500000000000000AA /* Firebase */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F4D3000500000000000000AA /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1000700000000000000AA /* FirestoreMedicineRepository.swift */,
+				F4D1000800000000000000AA /* FirestoreHistoryRepository.swift */,
+				F4D1000900000000000000AA /* FirebaseAuthService.swift */,
+				F4D1001000000000000000AA /* FirebaseAuthStateObservation.swift */,
+				F4D1001100000000000000AA /* FirestoreErrorMapper.swift */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
+		F4D3000600000000000000AA /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F4D3000700000000000000AA /* Models */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		F4D3000700000000000000AA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1001200000000000000AA /* AppUser.swift */,
+				F4D1001300000000000000AA /* MediStockError.swift */,
+				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
+				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F4D6000100000000000000AA /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				F4D4000200000000000000AA /* Stubs.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		F4D6000200000000000000AA /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				F4D4000300000000000000AA /* MockMedicineRepository.swift */,
+				F4D4000400000000000000AA /* MockHistoryRepository.swift */,
+				F4D4000500000000000000AA /* MockAuthService.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,10 +434,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4D2000100000000000000AA /* AppEnvironment.swift in Sources */,
+				F4D2000200000000000000AA /* DIContainer.swift in Sources */,
+				F4D2000300000000000000AA /* PreviewSupport.swift in Sources */,
+				F4D2000400000000000000AA /* MedicineRepository.swift in Sources */,
+				F4D2000500000000000000AA /* HistoryRepository.swift in Sources */,
+				F4D2000600000000000000AA /* AuthService.swift in Sources */,
+				F4D2000700000000000000AA /* FirestoreMedicineRepository.swift in Sources */,
+				F4D2000800000000000000AA /* FirestoreHistoryRepository.swift in Sources */,
+				F4D2000900000000000000AA /* FirebaseAuthService.swift in Sources */,
+				F4D2001000000000000000AA /* FirebaseAuthStateObservation.swift in Sources */,
+				F4D2001100000000000000AA /* FirestoreErrorMapper.swift in Sources */,
+				F4D2001200000000000000AA /* AppUser.swift in Sources */,
+				F4D2001300000000000000AA /* MediStockError.swift in Sources */,
+				F4D2001400000000000000AA /* SortOption.swift in Sources */,
 				53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */,
 				53E0D8D82C06097900DE1134 /* LoginView.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
-				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
+				53E0D8E02C0609B900DE1134 /* SessionViewModel.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
@@ -325,7 +468,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53E0D8A82C06084900DE1134 /* MediStockTests.swift in Sources */,
+				F4D5000100000000000000AA /* SessionViewModelTests.swift in Sources */,
+				F4D5000200000000000000AA /* Stubs.swift in Sources */,
+				F4D5000300000000000000AA /* MockMedicineRepository.swift in Sources */,
+				F4D5000400000000000000AA /* MockHistoryRepository.swift in Sources */,
+				F4D5000500000000000000AA /* MockAuthService.swift in Sources */,
+				53E0D8A82C06084900DE1134 /* MedicineStockViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

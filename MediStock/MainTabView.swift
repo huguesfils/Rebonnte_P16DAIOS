@@ -1,15 +1,25 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @State private var viewModel: MedicineStockViewModel
+
+    init(container: DIContainer) {
+        _viewModel = State(initialValue: MedicineStockViewModel(
+            medicineRepository: container.medicineRepository,
+            historyRepository: container.historyRepository,
+            authService: container.authService
+        ))
+    }
+
     var body: some View {
         TabView {
-            AisleListView()
+            AisleListView(viewModel: viewModel)
                 .tabItem {
                     Image(systemName: "list.dash")
                     Text("Aisles")
                 }
 
-            AllMedicinesView()
+            AllMedicinesView(viewModel: viewModel)
                 .tabItem {
                     Image(systemName: "square.grid.2x2")
                     Text("All Medicines")
@@ -18,8 +28,10 @@ struct MainTabView: View {
     }
 }
 
+#if DEBUG
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTabView()
+        MainTabView(container: .preview)
     }
 }
+#endif

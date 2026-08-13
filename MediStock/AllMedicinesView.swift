@@ -1,19 +1,23 @@
 import SwiftUI
 
 struct AllMedicinesView: View {
-    @ObservedObject var viewModel = MedicineStockViewModel()
-    @State private var filterText: String = ""
+    private let viewModel: MedicineStockViewModel
+
+    @State private var filterText = ""
     @State private var sortOption: SortOption = .none
+
+    init(viewModel: MedicineStockViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         NavigationView {
             VStack {
-                // Filtrage et Tri
                 HStack {
                     TextField("Filter by name", text: $filterText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.leading, 10)
-                    
+
                     Spacer()
 
                     Picker("Sort by", selection: $sortOption) {
@@ -25,10 +29,9 @@ struct AllMedicinesView: View {
                     .padding(.trailing, 10)
                 }
                 .padding(.top, 10)
-                
-                // Liste des Médicaments
+
                 List {
-                    ForEach(filteredAndSortedMedicines, id: \.id) { medicine in
+                    ForEach(filteredAndSortedMedicines) { medicine in
                         NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
                             VStack(alignment: .leading) {
                                 Text(medicine.name)
@@ -41,26 +44,24 @@ struct AllMedicinesView: View {
                 }
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {
-                    viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
+                    Task { await viewModel.addRandomMedicine() }
                 }) {
                     Image(systemName: "plus")
                 })
             }
         }
-        .onAppear {
-            viewModel.fetchMedicines()
+        .task {
+            await viewModel.loadMedicines()
         }
     }
-    
-    var filteredAndSortedMedicines: [Medicine] {
+
+    private var filteredAndSortedMedicines: [Medicine] {
         var medicines = viewModel.medicines
 
-        // Filtrage
         if !filterText.isEmpty {
             medicines = medicines.filter { $0.name.lowercased().contains(filterText.lowercased()) }
         }
 
-        // Tri
         switch sortOption {
         case .name:
             medicines.sort { $0.name.lowercased() < $1.name.lowercased() }
@@ -74,16 +75,10 @@ struct AllMedicinesView: View {
     }
 }
 
-enum SortOption: String, CaseIterable, Identifiable {
-    case none
-    case name
-    case stock
-
-    var id: String { self.rawValue }
-}
-
+#if DEBUG
 struct AllMedicinesView_Previews: PreviewProvider {
     static var previews: some View {
-        AllMedicinesView()
+        AllMedicinesView(viewModel: .preview)
     }
 }
+#endif
