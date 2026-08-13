@@ -15,7 +15,7 @@ struct MediStockApp: App {
                 EmptyView()
             } else {
                 ContentView(container: container)
-                    .environment(container.sessionViewModel)
+                    .environment(container.sessionManager)
             }
         }
     }

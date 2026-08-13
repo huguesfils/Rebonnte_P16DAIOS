@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(SessionViewModel.self) private var session
+    @Environment(SessionManager.self) private var session
 
     private let container: DIContainer
 
@@ -11,10 +11,13 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if session.isAuthenticated {
-                MainTabView(container: container)
-            } else {
+            switch session.currentScreen {
+            case .loading:
+                ProgressView()
+            case .login:
                 LoginView()
+            case .main:
+                MainTabView(container: container)
             }
         }
         .task {
@@ -28,7 +31,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let container = DIContainer.preview
         return ContentView(container: container)
-            .environment(container.sessionViewModel)
+            .environment(container.sessionManager)
     }
 }
 #endif

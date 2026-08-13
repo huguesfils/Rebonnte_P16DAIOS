@@ -20,7 +20,7 @@
 		53E0D8DA2C06098F00DE1134 /* MedicineListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8D92C06098F00DE1134 /* MedicineListView.swift */; };
 		53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DB2C06099C00DE1134 /* Medicine.swift */; };
 		53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */; };
-		53E0D8E02C0609B900DE1134 /* SessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */; };
+		53E0D8E02C0609B900DE1134 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8DF2C0609B900DE1134 /* SessionManager.swift */; };
 		53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */; };
 		53E0D8E62C066F4100DE1134 /* AisleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E52C066F4100DE1134 /* AisleListView.swift */; };
 		53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */; };
@@ -42,11 +42,13 @@
 		F4D2001200000000000000AA /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001200000000000000AA /* AppUser.swift */; };
 		F4D2001300000000000000AA /* MediStockError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001300000000000000AA /* MediStockError.swift */; };
 		F4D2001400000000000000AA /* SortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1001400000000000000AA /* SortOption.swift */; };
-		F4D5000100000000000000AA /* SessionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000100000000000000AA /* SessionViewModelTests.swift */; };
+		F4D5000100000000000000AA /* SessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000100000000000000AA /* SessionManagerTests.swift */; };
 		F4D5000200000000000000AA /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000200000000000000AA /* Stubs.swift */; };
 		F4D5000300000000000000AA /* MockMedicineRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000300000000000000AA /* MockMedicineRepository.swift */; };
 		F4D5000400000000000000AA /* MockHistoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000400000000000000AA /* MockHistoryRepository.swift */; };
 		F4D5000500000000000000AA /* MockAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D4000500000000000000AA /* MockAuthService.swift */; };
+		F4D8001000000000000000AA /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D8000100000000000000AA /* AppScreen.swift */; };
+		F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D8000200000000000000AA /* ViewModelFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,7 +83,7 @@
 		53E0D8D92C06098F00DE1134 /* MedicineListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineListView.swift; sourceTree = "<group>"; };
 		53E0D8DB2C06099C00DE1134 /* Medicine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medicine.swift; sourceTree = "<group>"; };
 		53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModel.swift; sourceTree = "<group>"; };
-		53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionViewModel.swift; sourceTree = "<group>"; };
+		53E0D8DF2C0609B900DE1134 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		53E0D8E52C066F4100DE1134 /* AisleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleListView.swift; sourceTree = "<group>"; };
 		53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineDetailView.swift; sourceTree = "<group>"; };
@@ -103,11 +105,13 @@
 		F4D1001200000000000000AA /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
 		F4D1001300000000000000AA /* MediStockError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockError.swift; sourceTree = "<group>"; };
 		F4D1001400000000000000AA /* SortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOption.swift; sourceTree = "<group>"; };
-		F4D4000100000000000000AA /* SessionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionViewModelTests.swift; sourceTree = "<group>"; };
+		F4D4000100000000000000AA /* SessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManagerTests.swift; sourceTree = "<group>"; };
 		F4D4000200000000000000AA /* Stubs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stubs.swift; sourceTree = "<group>"; };
 		F4D4000300000000000000AA /* MockMedicineRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMedicineRepository.swift; sourceTree = "<group>"; };
 		F4D4000400000000000000AA /* MockHistoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHistoryRepository.swift; sourceTree = "<group>"; };
 		F4D4000500000000000000AA /* MockAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthService.swift; sourceTree = "<group>"; };
+		F4D8000100000000000000AA /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
+		F4D8000200000000000000AA /* ViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,7 +188,7 @@
 			children = (
 				F4D6000100000000000000AA /* Helpers */,
 				F4D6000200000000000000AA /* Mocks */,
-				F4D4000100000000000000AA /* SessionViewModelTests.swift */,
+				F4D4000100000000000000AA /* SessionManagerTests.swift */,
 				53E0D8A72C06084900DE1134 /* MedicineStockViewModelTests.swift */,
 			);
 			path = MediStockTests;
@@ -202,6 +206,9 @@
 		F4D3000100000000000000AA /* App */ = {
 			isa = PBXGroup;
 			children = (
+				F4D8000100000000000000AA /* AppScreen.swift */,
+				F4D8000200000000000000AA /* ViewModelFactory.swift */,
+				53E0D8DF2C0609B900DE1134 /* SessionManager.swift */,
 				53E0D8962C06084700DE1134 /* MediStockApp.swift */,
 				53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */,
 				53E0D8982C06084700DE1134 /* ContentView.swift */,
@@ -303,7 +310,6 @@
 			isa = PBXGroup;
 			children = (
 				53E0D8D72C06097900DE1134 /* LoginView.swift */,
-				53E0D8DF2C0609B900DE1134 /* SessionViewModel.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -466,6 +472,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4D8001000000000000000AA /* AppScreen.swift in Sources */,
+				F4D8001100000000000000AA /* ViewModelFactory.swift in Sources */,
 				F4D2000100000000000000AA /* AppEnvironment.swift in Sources */,
 				F4D2000200000000000000AA /* DIContainer.swift in Sources */,
 				F4D2000300000000000000AA /* PreviewSupport.swift in Sources */,
@@ -483,7 +491,7 @@
 				53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */,
 				53E0D8D82C06097900DE1134 /* LoginView.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
-				53E0D8E02C0609B900DE1134 /* SessionViewModel.swift in Sources */,
+				53E0D8E02C0609B900DE1134 /* SessionManager.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
@@ -500,7 +508,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4D5000100000000000000AA /* SessionViewModelTests.swift in Sources */,
+				F4D5000100000000000000AA /* SessionManagerTests.swift in Sources */,
 				F4D5000200000000000000AA /* Stubs.swift in Sources */,
 				F4D5000300000000000000AA /* MockMedicineRepository.swift in Sources */,
 				F4D5000400000000000000AA /* MockHistoryRepository.swift in Sources */,

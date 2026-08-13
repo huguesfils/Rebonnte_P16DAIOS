@@ -4,11 +4,7 @@ struct MainTabView: View {
     @State private var viewModel: MedicineStockViewModel
 
     init(container: DIContainer) {
-        _viewModel = State(initialValue: MedicineStockViewModel(
-            medicineRepository: container.medicineRepository,
-            historyRepository: container.historyRepository,
-            authService: container.authService
-        ))
+        _viewModel = State(initialValue: container.viewModelFactory.makeMedicineStockViewModel())
     }
 
     var body: some View {

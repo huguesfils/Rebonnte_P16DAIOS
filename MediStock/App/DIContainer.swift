@@ -4,7 +4,8 @@ struct DIContainer {
     let medicineRepository: MedicineRepository
     let historyRepository: HistoryRepository
     let authService: AuthService
-    let sessionViewModel: SessionViewModel
+    let sessionManager: SessionManager
+    let viewModelFactory: ViewModelFactory
 
     @MainActor
     init(
@@ -15,7 +16,12 @@ struct DIContainer {
         self.medicineRepository = medicineRepository
         self.historyRepository = historyRepository
         self.authService = authService
-        self.sessionViewModel = SessionViewModel(authService: authService)
+        self.sessionManager = SessionManager(authService: authService)
+        self.viewModelFactory = ViewModelFactory(
+            medicineRepository: medicineRepository,
+            historyRepository: historyRepository,
+            authService: authService
+        )
     }
 
     @MainActor
