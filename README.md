@@ -1,0 +1,76 @@
+# MediStock
+
+Application iOS de gestion des stocks de médicaments : suivi par rayon, mouvements de stock et historique d'audit des modifications.
+
+## Prérequis
+
+- Xcode 16 ou supérieur (le projet utilise les dossiers synchronisés, `objectVersion 70`)
+- iOS 18 minimum
+- [SwiftLint](https://github.com/realm/SwiftLint) pour le lint local : `brew install swiftlint`
+
+## Démarrer
+
+```sh
+git clone https://github.com/huguesfils/Rebonnte_P16DAIOS.git
+cd Rebonnte_P16DAIOS
+open MediStock.xcodeproj
+```
+
+Le projet **compile et les tests passent sans configuration supplémentaire**. Aucune étape d'installation n'est nécessaire pour contribuer ou lancer la suite de tests.
+
+## Configuration Firebase
+
+`GoogleService-Info.plist` n'est **pas versionné** — il contient les identifiants du projet Firebase. Il est nécessaire uniquement pour **exécuter** l'application, pas pour la compiler ni pour lancer les tests.
+
+Pour l'obtenir : console Firebase → projet `medistock-8b739` → Paramètres du projet → application iOS `com.rebonnte.MediStock` → télécharger `GoogleService-Info.plist`, puis le déposer dans `MediStock/`.
+
+Sans ce fichier, la compilation et les tests fonctionnent ; le lancement de l'application échoue au démarrage sur une erreur Firebase explicite.
+
+### Pourquoi les tests n'en ont pas besoin
+
+Les ViewModels ne connaissent que des protocoles (`MedicineRepository`, `HistoryRepository`, `AuthService`) et reçoivent des doubles en test. La cible de test est liée à l'application hôte pour des raisons d'édition de liens, mais `AppEnvironment.isRunningUnitTests` empêche celle-ci d'initialiser Firebase pendant la suite : aucun appel réseau n'a lieu.
+
+## Commandes
+
+```sh
+# Compiler
+xcodebuild -project MediStock.xcodeproj -scheme MediStock \
+  -destination 'generic/platform=iOS Simulator' build
+
+# Tests unitaires
+xcodebuild test -project MediStock.xcodeproj -scheme MediStock \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+
+# Lint
+swiftlint lint
+```
+
+## Architecture
+
+```
+MediStock/
+├── App/          point d'entrée, DIContainer, SessionManager, routage
+├── Features/     un dossier par périmètre fonctionnel (Auth, Aisles, Medicines)
+├── Network/
+│   ├── Protocols/            frontière testable
+│   └── Services/Firebase/    seuls fichiers important le SDK Firebase
+└── Shared/       modèles de domaine et vues réutilisables
+```
+
+Le `DIContainer` est construit une fois dans `MediStockApp.init()` et détient les services sous forme de protocoles. Les ViewModels sont injectés par constructeur, sans valeur par défaut, ce qui les rend instanciables avec des doubles en test.
+
+Les modèles de domaine ne dépendent pas du SDK : le mapping Firestore est manuel, dans les implémentations de repository.
+
+## Sécurité Firestore
+
+Les règles sont versionnées dans `firestore.rules` et se déploient avec :
+
+```sh
+firebase deploy --only firestore:rules
+```
+
+`medicines` est accessible en lecture et écriture à tout utilisateur authentifié. `history` est un journal d'audit : lisible et alimentable une fois connecté, jamais modifiable ni supprimable depuis un client, et une entrée ne peut porter que l'identifiant de son auteur.
+
+## Tests
+
+Suite en Swift Testing (`@Suite` / `@Test` / `#expect`). Les doubles vivent dans `MediStockTests/Mocks/`, avec une propriété `errorToThrow` permettant de piloter les chemins d'erreur.
