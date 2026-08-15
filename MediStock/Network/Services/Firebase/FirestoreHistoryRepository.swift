@@ -42,17 +42,25 @@ struct FirestoreHistoryRepository: HistoryRepository {
 
     // MARK: - Mapping
 
+    static func date(from value: Any?) -> Date? {
+        if let timestamp = value as? Timestamp { return timestamp.dateValue() }
+        return value as? Date
+    }
+
     private static func makeEntry(from document: QueryDocumentSnapshot) -> HistoryEntry? {
-        let data = document.data()
+        makeEntry(id: document.documentID, data: document.data())
+    }
+
+    static func makeEntry(id: String, data: [String: Any]) -> HistoryEntry? {
         guard let medicineId = data["medicineId"] as? String,
               let user = data["user"] as? String,
               let action = data["action"] as? String,
               let details = data["details"] as? String,
-              let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() else {
+              let timestamp = date(from: data["timestamp"]) else {
             return nil
         }
         return HistoryEntry(
-            id: document.documentID,
+            id: id,
             medicineId: medicineId,
             user: user,
             userEmail: data["userEmail"] as? String,

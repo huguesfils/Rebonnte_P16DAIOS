@@ -76,34 +76,40 @@ struct FirestoreMedicineRepository: MedicineRepository {
             throw FirestoreErrorMapper.map(error)
         }
 
-        guard let payload = outcome as? [String: Any] else {
-            throw MediStockError.invalidData
-        }
-        if payload[Self.notFoundKey] != nil { throw MediStockError.medicineNotFound }
-        if payload[Self.negativeKey] != nil { throw MediStockError.negativeStock }
-
-        guard let previous = payload[Self.previousKey] as? Int,
-              let new = payload[Self.newKey] as? Int else {
-            throw MediStockError.invalidData
-        }
-
-        return StockChange(previous: previous, new: new)
+        return try Self.decodeStockChange(from: outcome)
     }
 
-    private static let notFoundKey = "notFound"
-    private static let negativeKey = "negative"
-    private static let previousKey = "previous"
-    private static let newKey = "new"
+    static let notFoundKey = "notFound"
+    static let negativeKey = "negative"
+    static let previousKey = "previous"
+    static let newKey = "new"
 
     // MARK: - Mapping
 
     private static func makeMedicine(from document: QueryDocumentSnapshot) -> Medicine? {
-        let data = document.data()
+        makeMedicine(id: document.documentID, data: document.data())
+    }
+
+    static func makeMedicine(id: String, data: [String: Any]) -> Medicine? {
         guard let name = data["name"] as? String,
               let stock = data["stock"] as? Int,
               let aisle = data["aisle"] as? String else {
             return nil
         }
-        return Medicine(id: document.documentID, name: name, stock: stock, aisle: aisle)
+        return Medicine(id: id, name: name, stock: stock, aisle: aisle)
+    }
+
+    static func decodeStockChange(from payload: Any?) throws -> StockChange {
+        guard let payload = payload as? [String: Any] else {
+            throw MediStockError.invalidData
+        }
+        if payload[notFoundKey] != nil { throw MediStockError.medicineNotFound }
+        if payload[negativeKey] != nil { throw MediStockError.negativeStock }
+
+        guard let previous = payload[previousKey] as? Int,
+              let new = payload[newKey] as? Int else {
+            throw MediStockError.invalidData
+        }
+        return StockChange(previous: previous, new: new)
     }
 }
