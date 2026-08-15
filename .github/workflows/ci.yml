@@ -1,0 +1,77 @@
+name: Build and test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: macos-15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: brew list swiftlint >/dev/null 2>&1 || brew install swiftlint
+
+      - name: Lint
+        run: swiftlint lint --strict --reporter github-actions-logging
+
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install xcbeautify
+        run: brew list xcbeautify >/dev/null 2>&1 || brew install xcbeautify
+
+      - name: Resolve a simulator
+        id: simulator
+        run: |
+          set -euo pipefail
+          NAME=$(xcrun simctl list devices available --json \
+            | python3 -c "
+          import json, sys
+          runtimes = json.load(sys.stdin)['devices']
+          candidates = [d['name'] for runtime, devices in runtimes.items() if 'iOS' in runtime for d in devices]
+          preferred = next((n for n in candidates if n.startswith('iPhone 16')), None)
+          print(preferred or next(n for n in candidates if n.startswith('iPhone')))
+          ")
+          echo "Simulateur retenu : $NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Build and test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=${{ steps.simulator.outputs.name }},OS=latest" \
+            -derivedDataPath DerivedData \
+            -resultBundlePath test-results.xcresult \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results.xcresult
