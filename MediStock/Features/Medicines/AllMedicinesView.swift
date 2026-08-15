@@ -33,7 +33,7 @@ struct AllMedicinesView: View {
                 .frame(maxHeight: .infinity)
             }
             .navigationTitle("Médicaments")
-            .searchable(text: $filterText, prompt: "Rechercher par nom")
+            .searchable(text: $filterText, prompt: "Rechercher")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     SignOutButton()
