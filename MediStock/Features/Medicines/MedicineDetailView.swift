@@ -42,7 +42,8 @@ struct MedicineDetailView: View {
             }
             .padding(.vertical)
         }
-        .navigationBarTitle("Medicine Details", displayMode: .inline)
+        .navigationTitle("Détail du médicament")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadHistory(forMedicineId: medicineId)
         }
@@ -66,10 +67,10 @@ struct MedicineDetailView: View {
 extension MedicineDetailView {
     private var medicineNameSection: some View {
         VStack(alignment: .leading) {
-            Text("Name")
+            Text("Nom")
                 .font(.headline)
-            TextField("Name", text: $draftName)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+            TextField("Nom", text: $draftName)
+                .textFieldStyle(.roundedBorder)
                 .submitLabel(.done)
                 .onSubmit(saveDetails)
                 .padding(.bottom, 10)
@@ -90,7 +91,7 @@ extension MedicineDetailView {
                 .foregroundStyle(.red)
 
                 TextField("Stock", value: $draftStock, formatter: NumberFormatter())
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textFieldStyle(.roundedBorder)
                     .keyboardType(.numberPad)
                     .frame(width: 100)
                     .submitLabel(.done)
@@ -110,10 +111,10 @@ extension MedicineDetailView {
 
     private var medicineAisleSection: some View {
         VStack(alignment: .leading) {
-            Text("Aisle")
+            Text("Rayon")
                 .font(.headline)
-            TextField("Aisle", text: $draftAisle)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+            TextField("Rayon", text: $draftAisle)
+                .textFieldStyle(.roundedBorder)
                 .submitLabel(.done)
                 .onSubmit(saveDetails)
                 .padding(.bottom, 10)
@@ -154,10 +155,10 @@ extension MedicineDetailView {
 }
 
 #if DEBUG
-struct MedicineDetailView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    NavigationStack {
         MedicineDetailView(
-            medicine: Medicine(name: "Sample", stock: 10, aisle: "Aisle 1"),
+            medicine: Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Aisle 1"),
             viewModel: .preview
         )
     }

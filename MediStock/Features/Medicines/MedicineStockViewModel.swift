@@ -5,6 +5,9 @@ import Foundation
 final class MedicineStockViewModel {
     private(set) var medicines: [Medicine] = []
     private(set) var history: [HistoryEntry] = []
+    private(set) var isLoadingMedicines = false
+    private(set) var isLoadingHistory = false
+    private(set) var hasLoadedMedicines = false
     var errorMessage: String?
 
     var aisles: [String] {
@@ -28,6 +31,12 @@ final class MedicineStockViewModel {
     // MARK: - Read
 
     func loadMedicines() async {
+        isLoadingMedicines = true
+        defer {
+            isLoadingMedicines = false
+            hasLoadedMedicines = true
+        }
+
         do {
             medicines = try await medicineRepository.fetchMedicines()
         } catch {
@@ -36,6 +45,9 @@ final class MedicineStockViewModel {
     }
 
     func loadHistory(forMedicineId medicineId: String) async {
+        isLoadingHistory = true
+        defer { isLoadingHistory = false }
+
         do {
             history = try await historyRepository.fetchHistory(medicineId: medicineId)
         } catch {

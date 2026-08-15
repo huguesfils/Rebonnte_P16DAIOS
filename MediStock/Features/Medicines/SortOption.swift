@@ -6,4 +6,12 @@ enum SortOption: String, CaseIterable, Identifiable {
     case stock
 
     var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .none: "Aucun"
+        case .name: "Nom"
+        case .stock: "Stock"
+        }
+    }
 }

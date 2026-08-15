@@ -3,44 +3,59 @@ import SwiftUI
 struct AisleListView: View {
     private let viewModel: MedicineStockViewModel
 
-    @State private var isAddingMedicine = false
-
     init(viewModel: MedicineStockViewModel) {
         self.viewModel = viewModel
     }
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(viewModel.aisles, id: \.self) { aisle in
-                    NavigationLink(destination: MedicineListView(aisle: aisle, viewModel: viewModel)) {
-                        Text(aisle)
-                    }
+        NavigationStack {
+            Group {
+                if viewModel.isLoadingMedicines && viewModel.aisles.isEmpty {
+                    ProgressView("Chargement des rayons…")
+                } else if viewModel.aisles.isEmpty {
+                    ContentUnavailableView(
+                        "Aucun rayon",
+                        systemImage: "shippingbox",
+                        description: Text("Ajoutez un médicament pour créer votre premier rayon.")
+                    )
+                } else {
+                    aisleList
                 }
             }
-            .navigationBarTitle("Aisles")
-            .navigationBarItems(
-                leading: SignOutButton(),
-                trailing: Button("Ajouter un médicament", systemImage: "plus") {
-                    isAddingMedicine = true
+            .navigationTitle("Rayons")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SignOutButton()
                 }
-                .labelStyle(.iconOnly)
-            )
-            .sheet(isPresented: $isAddingMedicine) {
-                AddMedicineView(viewModel: viewModel)
+                ToolbarItem(placement: .topBarTrailing) {
+                    AddMedicineButton(viewModel: viewModel)
+                }
             }
         }
         .task {
             await viewModel.loadMedicines()
         }
     }
+
+    private var aisleList: some View {
+        List(viewModel.aisles, id: \.self) { aisle in
+            NavigationLink(value: aisle) {
+                Text(aisle)
+            }
+            .accessibilityHint("Affiche les médicaments de ce rayon")
+        }
+        .navigationDestination(for: String.self) { aisle in
+            MedicineListView(aisle: aisle, viewModel: viewModel)
+        }
+        .refreshable {
+            await viewModel.loadMedicines()
+        }
+    }
 }
 
 #if DEBUG
-struct AisleListView_Previews: PreviewProvider {
-    static var previews: some View {
-        AisleListView(viewModel: .preview)
-            .environment(DIContainer.preview.sessionManager)
-    }
+#Preview {
+    AisleListView(viewModel: .preview)
+        .environment(DIContainer.preview.sessionManager)
 }
 #endif

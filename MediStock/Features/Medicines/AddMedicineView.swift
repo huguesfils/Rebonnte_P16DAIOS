@@ -22,7 +22,7 @@ struct AddMedicineView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section("Médicament") {
                     TextField("Nom", text: $name)
@@ -35,18 +35,23 @@ struct AddMedicineView: View {
                     Stepper("\(stock)", value: $stock, in: 0...9999)
                 }
             }
-            .navigationBarTitle("Nouveau médicament", displayMode: .inline)
-            .navigationBarItems(
-                leading: Button("Annuler") { dismiss() },
-                trailing: Button(action: save) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Text("Ajouter").bold()
-                    }
+            .navigationTitle("Nouveau médicament")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }
                 }
-                .disabled(!canSave)
-            )
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: save) {
+                        if isSaving {
+                            ProgressView()
+                        } else {
+                            Text("Ajouter").bold()
+                        }
+                    }
+                    .disabled(!canSave)
+                }
+            }
         }
     }
 
@@ -65,9 +70,7 @@ struct AddMedicineView: View {
 }
 
 #if DEBUG
-struct AddMedicineView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddMedicineView(viewModel: .preview)
-    }
+#Preview {
+    AddMedicineView(viewModel: .preview)
 }
 #endif

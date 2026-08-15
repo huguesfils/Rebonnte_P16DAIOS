@@ -9,27 +9,21 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            AisleListView(viewModel: viewModel)
-                .tabItem {
-                    Image(systemName: "list.dash")
-                    Text("Aisles")
-                }
+            Tab("Rayons", systemImage: "list.dash") {
+                AisleListView(viewModel: viewModel)
+            }
 
-            AllMedicinesView(viewModel: viewModel)
-                .tabItem {
-                    Image(systemName: "square.grid.2x2")
-                    Text("All Medicines")
-                }
+            Tab("Médicaments", systemImage: "square.grid.2x2") {
+                AllMedicinesView(viewModel: viewModel)
+            }
         }
         .errorAlert($viewModel.errorMessage)
     }
 }
 
 #if DEBUG
-struct MainTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainTabView(container: .preview)
-            .environment(DIContainer.preview.sessionManager)
-    }
+#Preview {
+    MainTabView(container: .preview)
+        .environment(DIContainer.preview.sessionManager)
 }
 #endif

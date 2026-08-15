@@ -5,7 +5,7 @@ struct MedicineHistorySection: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("History")
+            Text("Historique")
                 .font(.headline)
                 .padding(.top, 20)
 
@@ -30,32 +30,31 @@ private struct MedicineHistoryRow: View {
         VStack(alignment: .leading, spacing: 5) {
             Text(entry.action)
                 .font(.headline)
-            Text("User: \(entry.displayedUser)")
+            Text("Opérateur : \(entry.displayedUser)")
                 .font(.subheadline)
-            Text("Date: \(entry.timestamp.formatted())")
+            Text("Date : \(entry.timestamp.formatted())")
                 .font(.subheadline)
-            Text("Details: \(entry.details)")
+            Text("Détail : \(entry.details)")
                 .font(.subheadline)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(.systemGray6))
-        .cornerRadius(10)
+        .clipShape(.rect(cornerRadius: 10))
         .padding(.bottom, 5)
     }
 }
 
 #if DEBUG
-struct MedicineHistorySection_Previews: PreviewProvider {
-    static var previews: some View {
-        MedicineHistorySection(entries: [
-            HistoryEntry(
-                medicineId: "1",
-                user: "operateur@medistock.app",
-                action: "Increased stock of Doliprane by 1",
-                details: "Stock changed from 10 to 11"
-            )
-        ])
-    }
+#Preview {
+    MedicineHistorySection(entries: [
+        HistoryEntry(
+            medicineId: "1",
+            user: "uid",
+            userEmail: "operateur@medistock.app",
+            action: "Increased stock of Doliprane by 1",
+            details: "Stock changed from 10 to 11"
+        )
+    ])
 }
 #endif

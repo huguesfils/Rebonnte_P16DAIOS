@@ -39,7 +39,8 @@ struct LoginView: View {
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "cross.case.fill")
-                .font(.system(size: 48))
+                .font(.largeTitle)
+                .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("MediStock")
                 .font(.largeTitle)
@@ -98,11 +99,9 @@ struct LoginView: View {
 }
 
 #if DEBUG
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        let container = DIContainer.preview
-        return LoginView(container: container)
-            .environment(container.sessionManager)
-    }
+#Preview {
+    let container = DIContainer.preview
+    LoginView(container: container)
+        .environment(container.sessionManager)
 }
 #endif

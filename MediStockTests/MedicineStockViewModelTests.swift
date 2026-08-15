@@ -51,6 +51,38 @@ struct MedicineStockViewModelTests {
         #expect(sut.errorMessage == MediStockError.networkUnavailable.localizedDescription)
     }
 
+    // MARK: - Loading state
+
+    @Test func loadingFlagsAreClearedAfterSuccess() async {
+        let sut = makeSUT()
+        #expect(!sut.isLoadingMedicines)
+        #expect(!sut.hasLoadedMedicines)
+
+        await sut.loadMedicines()
+
+        #expect(!sut.isLoadingMedicines)
+        #expect(sut.hasLoadedMedicines)
+    }
+
+    @Test func loadingFlagsAreClearedAfterFailure() async {
+        mockMedicines.errorToThrow = MediStockError.networkUnavailable
+        let sut = makeSUT()
+
+        await sut.loadMedicines()
+
+        #expect(!sut.isLoadingMedicines)
+        #expect(sut.hasLoadedMedicines)
+    }
+
+    @Test func historyLoadingFlagIsClearedAfterFailure() async {
+        mockHistory.errorToThrow = MediStockError.networkUnavailable
+        let sut = makeSUT()
+
+        await sut.loadHistory(forMedicineId: "medicine-1")
+
+        #expect(!sut.isLoadingHistory)
+    }
+
     // MARK: - Derived state
 
     @Test func aislesAreDeduplicatedAndSorted() async {

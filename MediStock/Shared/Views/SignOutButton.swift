@@ -24,10 +24,8 @@ struct SignOutButton: View {
 }
 
 #if DEBUG
-struct SignOutButton_Previews: PreviewProvider {
-    static var previews: some View {
-        SignOutButton()
-            .environment(DIContainer.preview.sessionManager)
-    }
+#Preview {
+    SignOutButton()
+        .environment(DIContainer.preview.sessionManager)
 }
 #endif

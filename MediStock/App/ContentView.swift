@@ -30,11 +30,9 @@ struct ContentView: View {
 }
 
 #if DEBUG
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        let container = DIContainer.preview
-        return ContentView(container: container)
-            .environment(container.sessionManager)
-    }
+#Preview {
+    let container = DIContainer.preview
+    ContentView(container: container)
+        .environment(container.sessionManager)
 }
 #endif

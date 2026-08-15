@@ -14,31 +14,43 @@ struct MedicineListView: View {
     }
 
     var body: some View {
+        Group {
+            if medicines.isEmpty {
+                ContentUnavailableView(
+                    "Rayon vide",
+                    systemImage: "tray",
+                    description: Text("Ce rayon ne contient plus aucun médicament.")
+                )
+            } else {
+                list
+            }
+        }
+        .navigationTitle(aisle)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var list: some View {
         List {
             ForEach(medicines) { medicine in
-                NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
-                    VStack(alignment: .leading) {
-                        Text(medicine.name)
-                            .font(.headline)
-                        Text("Stock: \(medicine.stock)")
-                            .font(.subheadline)
-                    }
+                NavigationLink {
+                    MedicineDetailView(medicine: medicine, viewModel: viewModel)
+                } label: {
+                    MedicineRow(medicine: medicine)
                 }
             }
             .onDelete { offsets in
                 Task { await viewModel.delete(atOffsets: offsets, in: medicines) }
             }
         }
-        .navigationBarTitle(aisle)
-        .task {
+        .refreshable {
             await viewModel.loadMedicines()
         }
     }
 }
 
 #if DEBUG
-struct MedicineListView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    NavigationStack {
         MedicineListView(aisle: "Aisle 1", viewModel: .preview)
     }
 }
