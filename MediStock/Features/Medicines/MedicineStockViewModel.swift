@@ -72,15 +72,15 @@ final class MedicineStockViewModel {
             return false
         }
 
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedAisle = aisle.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedName.isEmpty, !trimmedAisle.isEmpty, stock >= 0 else {
-            errorMessage = MediStockError.invalidData.localizedDescription
+        let input: MedicineInput
+        do {
+            input = try MedicineInput(name: name, aisle: aisle, stock: stock)
+        } catch {
+            errorMessage = error.localizedDescription
             return false
         }
 
-        let medicine = Medicine(name: trimmedName, stock: stock, aisle: trimmedAisle)
+        let medicine = Medicine(name: input.name, stock: input.stock, aisle: input.aisle)
 
         do {
             try await medicineRepository.save(medicine)
@@ -93,7 +93,7 @@ final class MedicineStockViewModel {
             medicineId: medicine.id,
             user: user,
             action: "Added \(medicine.name)",
-            details: "Created with stock \(stock) in \(trimmedAisle)"
+            details: "Created with stock \(input.stock) in \(input.aisle)"
         )
         await loadMedicines()
         return true
@@ -110,10 +110,18 @@ final class MedicineStockViewModel {
             return
         }
 
+        let input: MedicineInput
+        do {
+            input = try MedicineInput(name: name, aisle: aisle, stock: updated.stock)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
+        }
+
         let previousName = updated.name
         let previousAisle = updated.aisle
-        updated.name = name
-        updated.aisle = aisle
+        updated.name = input.name
+        updated.aisle = input.aisle
 
         guard updated.name != previousName || updated.aisle != previousAisle else { return }
 

@@ -318,6 +318,47 @@ struct MedicineStockViewModelTests {
         #expect(mockHistory.addedEntries.isEmpty)
     }
 
+    @Test("Renommer en valeur vide est refusé", arguments: [
+        ("", "Aisle 1"),
+        ("   ", "Aisle 1"),
+        ("Doliprane", ""),
+        ("Doliprane", "  ")
+    ])
+    func updateDetailsRejectsBlankFields(name: String, aisle: String) async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.updateDetails(medicineId: "1", name: name, aisle: aisle)
+
+        #expect(mockMedicines.savedMedicines.isEmpty)
+        #expect(mockHistory.addedEntries.isEmpty)
+        #expect(sut.medicines.first?.name == "Doliprane")
+        #expect(sut.errorMessage == MediStockError.invalidData.localizedDescription)
+    }
+
+    @Test func updateDetailsTrimsWhitespace() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.updateDetails(medicineId: "1", name: "  Efferalgan  ", aisle: " Aisle 2 ")
+
+        #expect(sut.medicines.first?.name == "Efferalgan")
+        #expect(sut.medicines.first?.aisle == "Aisle 2")
+    }
+
+    @Test func updateDetailsIgnoresChangeThatOnlyAddsWhitespace() async {
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        let sut = makeSUT()
+        await sut.loadMedicines()
+
+        await sut.updateDetails(medicineId: "1", name: "  Doliprane  ", aisle: "Aisle 1")
+
+        #expect(mockMedicines.savedMedicines.isEmpty)
+        #expect(mockHistory.addedEntries.isEmpty)
+    }
+
     @Test func updateDetailsOnUnknownMedicineIsRejected() async {
         let sut = makeSUT()
 

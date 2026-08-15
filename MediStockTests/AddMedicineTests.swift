@@ -63,22 +63,31 @@ struct AddMedicineTests {
 
     // MARK: - Rejected input
 
-    @Test("Saisie invalide", arguments: [
-        ("", 1, "Aisle 3"),
-        ("   ", 1, "Aisle 3"),
-        ("Doliprane", 1, ""),
-        ("Doliprane", 1, "   "),
-        ("Doliprane", -1, "Aisle 3")
+    @Test("Nom ou rayon vide", arguments: [
+        ("", "Aisle 3"),
+        ("   ", "Aisle 3"),
+        ("Doliprane", ""),
+        ("Doliprane", "   ")
     ])
-    func invalidInputIsRejected(name: String, stock: Int, aisle: String) async {
+    func blankFieldsAreRejected(name: String, aisle: String) async {
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: name, stock: stock, aisle: aisle)
+        let didSave = await sut.addMedicine(name: name, stock: 1, aisle: aisle)
 
         #expect(!didSave)
         #expect(mockMedicines.savedMedicines.isEmpty)
         #expect(mockHistory.addedEntries.isEmpty)
         #expect(sut.errorMessage == MediStockError.invalidData.localizedDescription)
+    }
+
+    @Test func negativeStockIsRejectedWithItsOwnMessage() async {
+        let sut = makeSUT()
+
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: -1, aisle: "Aisle 3")
+
+        #expect(!didSave)
+        #expect(mockMedicines.savedMedicines.isEmpty)
+        #expect(sut.errorMessage == MediStockError.negativeStock.localizedDescription)
     }
 
     @Test func addMedicineWithoutUserIsRejected() async {

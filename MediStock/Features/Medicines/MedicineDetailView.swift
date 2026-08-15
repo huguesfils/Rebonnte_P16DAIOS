@@ -73,9 +73,26 @@ extension MedicineDetailView {
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.done)
                 .onSubmit(saveDetails)
-                .padding(.bottom, 10)
+
+            invalidDetailsHint
+
+            Spacer().frame(height: 10)
         }
         .padding(.horizontal)
+    }
+
+    private var areDetailsValid: Bool {
+        MedicineInput.isValid(name: draftName, aisle: draftAisle, stock: draftStock)
+    }
+
+    @ViewBuilder
+    private var invalidDetailsHint: some View {
+        if !areDetailsValid {
+            Text("Le nom et le rayon ne peuvent pas être vides.")
+                .font(.footnote)
+                .foregroundStyle(.red)
+                .accessibilityLabel("Saisie invalide : le nom et le rayon ne peuvent pas être vides")
+        }
     }
 
     private var medicineStockSection: some View {
@@ -142,6 +159,8 @@ extension MedicineDetailView {
     }
 
     private func saveDetails() {
+        guard areDetailsValid else { return }
+
         Task {
             await viewModel.updateDetails(medicineId: medicineId, name: draftName, aisle: draftAisle)
         }

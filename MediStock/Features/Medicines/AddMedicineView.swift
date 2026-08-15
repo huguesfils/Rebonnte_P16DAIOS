@@ -15,10 +15,7 @@ struct AddMedicineView: View {
     }
 
     private var canSave: Bool {
-        !isSaving
-            && !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !aisle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && stock >= 0
+        !isSaving && MedicineInput.isValid(name: name, aisle: aisle, stock: stock)
     }
 
     var body: some View {
