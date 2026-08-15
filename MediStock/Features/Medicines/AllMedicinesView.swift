@@ -43,9 +43,6 @@ struct AllMedicinesView: View {
                 }
             }
         }
-        .task {
-            await viewModel.loadMedicines()
-        }
     }
 
     private var sortPicker: some View {

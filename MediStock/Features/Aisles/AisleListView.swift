@@ -32,9 +32,6 @@ struct AisleListView: View {
                 }
             }
         }
-        .task {
-            await viewModel.loadMedicines()
-        }
     }
 
     private var aisleList: some View {

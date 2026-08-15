@@ -18,6 +18,9 @@ struct MainTabView: View {
             }
         }
         .errorAlert($viewModel.errorMessage)
+        .task {
+            await viewModel.loadMedicinesIfNeeded()
+        }
     }
 }
 

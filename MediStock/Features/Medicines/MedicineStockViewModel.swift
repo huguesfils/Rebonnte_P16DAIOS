@@ -30,6 +30,11 @@ final class MedicineStockViewModel {
 
     // MARK: - Read
 
+    func loadMedicinesIfNeeded() async {
+        guard !hasLoadedMedicines, !isLoadingMedicines else { return }
+        await loadMedicines()
+    }
+
     func loadMedicines() async {
         isLoadingMedicines = true
         defer {
