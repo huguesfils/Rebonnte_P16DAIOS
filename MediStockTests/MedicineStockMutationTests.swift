@@ -97,8 +97,8 @@ struct MedicineStockMutationTests {
         await sut.increaseStock(medicineId: "1")
 
         #expect(mockHistory.addedEntries.map(\.details) == [
-            "Stock changed from 10 to 11",
-            "Stock changed from 11 to 12"
+            "Stock passé de 10 à 11",
+            "Stock passé de 11 à 12"
         ])
     }
 
@@ -122,7 +122,7 @@ struct MedicineStockMutationTests {
 
         #expect(mockMedicines.storedMedicines["1"]?.stock == 21)
         #expect(sut.medicines.first?.stock == 21)
-        #expect(mockHistory.addedEntries.first?.details == "Stock changed from 20 to 21")
+        #expect(mockHistory.addedEntries.first?.details == "Stock passé de 20 à 21")
     }
 
     @Test func stockCannotGoNegative() async {
@@ -148,7 +148,7 @@ struct MedicineStockMutationTests {
         await sut.setStock(medicineId: "1", to: 42)
 
         #expect(sut.medicines.first?.stock == 42)
-        #expect(mockHistory.addedEntries.first?.details == "Stock changed from 10 to 42")
+        #expect(mockHistory.addedEntries.first?.details == "Stock passé de 10 à 42")
     }
 
     @Test func setStockToSameValueWritesNothing() async {

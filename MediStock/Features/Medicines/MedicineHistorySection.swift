@@ -2,16 +2,18 @@ import SwiftUI
 
 struct MedicineHistorySection: View {
     let entries: [HistoryEntry]
+    let isLoading: Bool
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Historique")
-                .font(.headline)
-                .padding(.top, 20)
-
-            if entries.isEmpty {
+        Section("Historique") {
+            if isLoading && entries.isEmpty {
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Chargement de l'historique…")
+                        .foregroundStyle(.secondary)
+                }
+            } else if entries.isEmpty {
                 Text("Aucun mouvement enregistré pour ce médicament.")
-                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(entries) { entry in
@@ -19,42 +21,57 @@ struct MedicineHistorySection: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }
 
 private struct MedicineHistoryRow: View {
     let entry: HistoryEntry
 
+    private var formattedDate: String {
+        entry.timestamp.formatted(date: .abbreviated, time: .shortened)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(entry.action)
-                .font(.headline)
-            Text("Opérateur : \(entry.displayedUser)")
                 .font(.subheadline)
-            Text("Date : \(entry.timestamp.formatted())")
-                .font(.subheadline)
-            Text("Détail : \(entry.details)")
-                .font(.subheadline)
+                .bold()
+
+            Text(entry.details)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            HStack {
+                Text(entry.displayedUser)
+                Spacer()
+                Text(formattedDate)
+            }
+            .font(.caption)
+            .foregroundStyle(.tertiary)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(.rect(cornerRadius: 10))
-        .padding(.bottom, 5)
+        .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(entry.action). \(entry.details). Par \(entry.displayedUser), le \(formattedDate)")
     }
 }
 
 #if DEBUG
 #Preview {
-    MedicineHistorySection(entries: [
-        HistoryEntry(
-            medicineId: "1",
-            user: "uid",
-            userEmail: "operateur@medistock.app",
-            action: "Increased stock of Doliprane by 1",
-            details: "Stock changed from 10 to 11"
+    Form {
+        MedicineHistorySection(
+            entries: [
+                HistoryEntry(
+                    medicineId: "1",
+                    user: "uid",
+                    userEmail: "operateur@medistock.app",
+                    action: "Stock de Doliprane augmenté de 1",
+                    details: "Stock passé de 10 à 11"
+                )
+            ],
+            isLoading: false
         )
-    ])
+
+        MedicineHistorySection(entries: [], isLoading: false)
+    }
 }
 #endif

@@ -21,33 +21,33 @@ struct AddMedicineTests {
     @Test func addMedicineSavesTheUserInput() async {
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Aisle 3")
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Rayon 3")
 
         #expect(didSave)
         let saved = mockMedicines.savedMedicines.first
         #expect(saved?.name == "Doliprane")
         #expect(saved?.stock == 12)
-        #expect(saved?.aisle == "Aisle 3")
+        #expect(saved?.aisle == "Rayon 3")
         #expect(sut.errorMessage == nil)
     }
 
     @Test func addMedicineTrimsWhitespace() async {
         let sut = makeSUT()
 
-        await sut.addMedicine(name: "  Doliprane  ", stock: 1, aisle: "  Aisle 3  ")
+        await sut.addMedicine(name: "  Doliprane  ", stock: 1, aisle: "  Rayon 3  ")
 
         #expect(mockMedicines.savedMedicines.first?.name == "Doliprane")
-        #expect(mockMedicines.savedMedicines.first?.aisle == "Aisle 3")
+        #expect(mockMedicines.savedMedicines.first?.aisle == "Rayon 3")
     }
 
     @Test func addMedicineRecordsHistoryAndReloads() async {
         let sut = makeSUT()
 
-        await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Aisle 3")
+        await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Rayon 3")
 
         #expect(mockHistory.addedEntries.count == 1)
-        #expect(mockHistory.addedEntries.first?.action == "Added Doliprane")
-        #expect(mockHistory.addedEntries.first?.details == "Created with stock 12 in Aisle 3")
+        #expect(mockHistory.addedEntries.first?.action == "Ajout de Doliprane")
+        #expect(mockHistory.addedEntries.first?.details == "Créé avec un stock de 12 dans Rayon 3")
         #expect(mockMedicines.fetchCallCount == 1)
         #expect(sut.medicines.count == 1)
     }
@@ -55,7 +55,7 @@ struct AddMedicineTests {
     @Test func addMedicineAcceptsZeroStock() async {
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: "Doliprane", stock: 0, aisle: "Aisle 3")
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: 0, aisle: "Rayon 3")
 
         #expect(didSave)
         #expect(mockMedicines.savedMedicines.first?.stock == 0)
@@ -64,8 +64,8 @@ struct AddMedicineTests {
     // MARK: - Rejected input
 
     @Test("Nom ou rayon vide", arguments: [
-        ("", "Aisle 3"),
-        ("   ", "Aisle 3"),
+        ("", "Rayon 3"),
+        ("   ", "Rayon 3"),
         ("Doliprane", ""),
         ("Doliprane", "   ")
     ])
@@ -83,7 +83,7 @@ struct AddMedicineTests {
     @Test func negativeStockIsRejectedWithItsOwnMessage() async {
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: "Doliprane", stock: -1, aisle: "Aisle 3")
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: -1, aisle: "Rayon 3")
 
         #expect(!didSave)
         #expect(mockMedicines.savedMedicines.isEmpty)
@@ -94,7 +94,7 @@ struct AddMedicineTests {
         mockAuth.currentUser = nil
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Rayon 3")
 
         #expect(!didSave)
         #expect(mockMedicines.savedMedicines.isEmpty)
@@ -105,7 +105,7 @@ struct AddMedicineTests {
         mockMedicines.errorToThrow = MediStockError.permissionDenied
         let sut = makeSUT()
 
-        let didSave = await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+        let didSave = await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Rayon 3")
 
         #expect(!didSave)
         #expect(mockHistory.addedEntries.isEmpty)

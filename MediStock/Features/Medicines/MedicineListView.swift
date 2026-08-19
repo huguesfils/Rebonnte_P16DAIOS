@@ -12,25 +12,20 @@ struct MedicineListView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                sortPicker
-
-                Group {
-                    if viewModel.isLoadingMedicines && viewModel.medicines.isEmpty {
-                        ProgressView("Chargement des médicaments…")
-                    } else if viewModel.medicines.isEmpty {
-                        ContentUnavailableView(
-                            "Aucun médicament",
-                            systemImage: "pills",
-                            description: Text("Ajoutez un premier médicament pour démarrer votre stock.")
-                        )
-                    } else if filteredAndSortedMedicines.isEmpty {
-                        ContentUnavailableView.search(text: filterText)
-                    } else {
-                        list
-                    }
+            Group {
+                if viewModel.isLoadingMedicines && viewModel.medicines.isEmpty {
+                    ProgressView("Chargement des médicaments…")
+                } else if viewModel.medicines.isEmpty {
+                    ContentUnavailableView(
+                        "Aucun médicament",
+                        systemImage: "pills",
+                        description: Text("Ajoutez un premier médicament pour démarrer votre stock.")
+                    )
+                } else if filteredAndSortedMedicines.isEmpty {
+                    ContentUnavailableView.search(text: filterText)
+                } else {
+                    list
                 }
-                .frame(maxHeight: .infinity)
             }
             .navigationTitle("Médicaments")
             .searchable(text: $filterText, prompt: "Rechercher")
@@ -39,21 +34,30 @@ struct MedicineListView: View {
                     SignOutButton()
                 }
                 ToolbarItem(placement: .topBarTrailing) {
+                    sortMenu
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     AddMedicineButton(viewModel: viewModel)
                 }
             }
         }
     }
 
-    private var sortPicker: some View {
-        Picker("Trier par", selection: $sortOption) {
-            ForEach(SortOption.allCases) { option in
-                Text(option.title).tag(option)
+    private var sortMenu: some View {
+        Menu {
+            Picker("Trier par", selection: $sortOption) {
+                ForEach(SortOption.allCases) { option in
+                    Text(option.title).tag(option)
+                }
             }
+        } label: {
+            Label(
+                "Trier par",
+                systemImage: sortOption == .none
+                    ? "arrow.up.arrow.down"
+                    : "arrow.up.arrow.down.circle.fill"
+            )
         }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-        .padding(.bottom, 8)
     }
 
     private var list: some View {

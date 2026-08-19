@@ -120,27 +120,27 @@ struct MedicineStockViewModelTests {
 
     @Test func aislesAreDeduplicatedAndSorted() async {
         mockMedicines.storedMedicines = [
-            "1": .stub(id: "1", aisle: "Aisle 2"),
-            "2": .stub(id: "2", aisle: "Aisle 1"),
-            "3": .stub(id: "3", aisle: "Aisle 2")
+            "1": .stub(id: "1", aisle: "Rayon 2"),
+            "2": .stub(id: "2", aisle: "Rayon 1"),
+            "3": .stub(id: "3", aisle: "Rayon 2")
         ]
         let sut = makeSUT()
 
         await sut.loadMedicines()
 
-        #expect(sut.aisles == ["Aisle 1", "Aisle 2"])
+        #expect(sut.aisles == ["Rayon 1", "Rayon 2"])
     }
 
     @Test func medicinesInAisleFiltersByAisle() async {
         mockMedicines.storedMedicines = [
-            "1": .stub(id: "1", aisle: "Aisle 1"),
-            "2": .stub(id: "2", aisle: "Aisle 2")
+            "1": .stub(id: "1", aisle: "Rayon 1"),
+            "2": .stub(id: "2", aisle: "Rayon 2")
         ]
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        #expect(sut.medicines(inAisle: "Aisle 1").count == 1)
-        #expect(sut.medicines(inAisle: "Aisle 9").isEmpty)
+        #expect(sut.medicines(inAisle: "Rayon 1").count == 1)
+        #expect(sut.medicines(inAisle: "Rayon 9").isEmpty)
     }
 
     // MARK: - loadHistory
@@ -175,7 +175,7 @@ struct MedicineStockViewModelTests {
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Aisle 1")
+        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Rayon 1")
 
         #expect(sut.medicines.first?.name == "Renommé")
         #expect(mockHistory.addedEntries.count == 1)
@@ -188,31 +188,31 @@ struct MedicineStockViewModelTests {
         await sut.loadMedicines()
         mockMedicines.errorToThrow = MediStockError.permissionDenied
 
-        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Aisle 1")
+        await sut.updateDetails(medicineId: "1", name: "Renommé", aisle: "Rayon 1")
 
         #expect(mockHistory.addedEntries.isEmpty)
         #expect(sut.errorMessage == MediStockError.permissionDenied.localizedDescription)
     }
 
     @Test func updateDetailsWithoutChangeWritesNothing() async {
-        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Rayon 1")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.updateDetails(medicineId: "1", name: "Doliprane", aisle: "Aisle 1")
+        await sut.updateDetails(medicineId: "1", name: "Doliprane", aisle: "Rayon 1")
 
         #expect(mockMedicines.savedMedicines.isEmpty)
         #expect(mockHistory.addedEntries.isEmpty)
     }
 
     @Test("Renommer en valeur vide est refusé", arguments: [
-        ("", "Aisle 1"),
-        ("   ", "Aisle 1"),
+        ("", "Rayon 1"),
+        ("   ", "Rayon 1"),
         ("Doliprane", ""),
         ("Doliprane", "  ")
     ])
     func updateDetailsRejectsBlankFields(name: String, aisle: String) async {
-        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Rayon 1")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
@@ -225,22 +225,22 @@ struct MedicineStockViewModelTests {
     }
 
     @Test func updateDetailsTrimsWhitespace() async {
-        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Rayon 1")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.updateDetails(medicineId: "1", name: "  Efferalgan  ", aisle: " Aisle 2 ")
+        await sut.updateDetails(medicineId: "1", name: "  Efferalgan  ", aisle: " Rayon 2 ")
 
         #expect(sut.medicines.first?.name == "Efferalgan")
-        #expect(sut.medicines.first?.aisle == "Aisle 2")
+        #expect(sut.medicines.first?.aisle == "Rayon 2")
     }
 
     @Test func updateDetailsIgnoresChangeThatOnlyAddsWhitespace() async {
-        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Aisle 1")]
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", aisle: "Rayon 1")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
-        await sut.updateDetails(medicineId: "1", name: "  Doliprane  ", aisle: "Aisle 1")
+        await sut.updateDetails(medicineId: "1", name: "  Doliprane  ", aisle: "Rayon 1")
 
         #expect(mockMedicines.savedMedicines.isEmpty)
         #expect(mockHistory.addedEntries.isEmpty)
@@ -275,7 +275,7 @@ struct MedicineStockViewModelTests {
         mockAuth.currentUser = AppUser(id: "user-42", email: "a@b.c")
         let sut = makeSUT()
 
-        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Rayon 3")
 
         #expect(mockHistory.addedEntries.first?.user == "user-42")
     }
@@ -284,7 +284,7 @@ struct MedicineStockViewModelTests {
         mockAuth.currentUser = AppUser(id: "user-42", email: "operateur@medistock.app")
         let sut = makeSUT()
 
-        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Rayon 3")
 
         let entry = mockHistory.addedEntries.first
         #expect(entry?.userEmail == "operateur@medistock.app")
@@ -295,7 +295,7 @@ struct MedicineStockViewModelTests {
         mockAuth.currentUser = AppUser(id: "user-42", email: nil)
         let sut = makeSUT()
 
-        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Aisle 3")
+        await sut.addMedicine(name: "Doliprane", stock: 1, aisle: "Rayon 3")
 
         let entry = mockHistory.addedEntries.first
         #expect(entry?.userEmail == nil)

@@ -8,13 +8,13 @@ struct FirestoreMappingTests {
     @Test func medicineIsMappedFromACompleteDocument() throws {
         let medicine = try #require(FirestoreMedicineRepository.makeMedicine(
             id: "doc-1",
-            data: ["name": "Doliprane", "stock": 12, "aisle": "Aisle 3"]
+            data: ["name": "Doliprane", "stock": 12, "aisle": "Rayon 3"]
         ))
 
         #expect(medicine.id == "doc-1")
         #expect(medicine.name == "Doliprane")
         #expect(medicine.stock == 12)
-        #expect(medicine.aisle == "Aisle 3")
+        #expect(medicine.aisle == "Rayon 3")
     }
 
     @Test func unknownFieldsAreIgnored() throws {
@@ -48,8 +48,8 @@ struct FirestoreMappingTests {
                 "medicineId": "med-1",
                 "user": "uid-1",
                 "userEmail": "operateur@medistock.app",
-                "action": "Increased stock",
-                "details": "Stock changed from 10 to 11",
+                "action": "Stock de Doliprane augmenté de 1",
+                "details": "Stock passé de 10 à 11",
                 "timestamp": timestamp
             ]
         ))

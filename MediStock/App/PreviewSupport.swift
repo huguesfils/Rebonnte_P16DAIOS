@@ -5,8 +5,8 @@ import Foundation
 
 struct PreviewMedicineRepository: MedicineRepository {
     var medicines: [Medicine] = [
-        Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Aisle 1"),
-        Medicine(id: "preview-2", name: "Ibuprofène", stock: 4, aisle: "Aisle 2")
+        Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Rayon 1"),
+        Medicine(id: "preview-2", name: "Ibuprofène", stock: 4, aisle: "Rayon 2")
     ]
 
     func fetchMedicines() async throws -> [Medicine] { medicines }

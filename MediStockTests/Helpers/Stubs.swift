@@ -6,7 +6,7 @@ extension Medicine {
         id: String = "medicine-1",
         name: String = "Doliprane",
         stock: Int = 10,
-        aisle: String = "Aisle 1"
+        aisle: String = "Rayon 1"
     ) -> Medicine {
         Medicine(id: id, name: name, stock: stock, aisle: aisle)
     }
@@ -18,8 +18,8 @@ extension HistoryEntry {
         medicineId: String = "medicine-1",
         user: String = "test-user",
         userEmail: String? = "test@medistock.app",
-        action: String = "Added Doliprane",
-        details: String = "Added new medicine",
+        action: String = "Ajout de Doliprane",
+        details: String = "Créé avec un stock de 12 dans Rayon 1",
         timestamp: Date = Date()
     ) -> HistoryEntry {
         HistoryEntry(

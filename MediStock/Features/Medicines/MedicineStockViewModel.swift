@@ -97,8 +97,8 @@ final class MedicineStockViewModel {
         await recordHistory(
             medicineId: medicine.id,
             user: user,
-            action: "Added \(medicine.name)",
-            details: "Created with stock \(input.stock) in \(input.aisle)"
+            action: "Ajout de \(medicine.name)",
+            details: "Créé avec un stock de \(input.stock) dans \(input.aisle)"
         )
         await loadMedicines()
         return true
@@ -142,8 +142,8 @@ final class MedicineStockViewModel {
         await recordHistory(
             medicineId: medicineId,
             user: user,
-            action: "Updated \(updated.name)",
-            details: "Name \(previousName) → \(updated.name), aisle \(previousAisle) → \(updated.aisle)"
+            action: "Modification de \(updated.name)",
+            details: "Nom : \(previousName) → \(updated.name) · Rayon : \(previousAisle) → \(updated.aisle)"
         )
     }
 
@@ -189,8 +189,8 @@ final class MedicineStockViewModel {
         await recordHistory(
             medicineId: medicineId,
             user: user,
-            action: "Deleted \(medicine.name)",
-            details: "Removed from \(medicine.aisle), stock was \(medicine.stock)"
+            action: "Suppression de \(medicine.name)",
+            details: "Retiré de \(medicine.aisle), stock de \(medicine.stock)"
         )
         await loadMedicines()
         return true
@@ -237,8 +237,8 @@ final class MedicineStockViewModel {
         await recordHistory(
             medicineId: medicineId,
             user: user,
-            action: "\(change.delta > 0 ? "Increased" : "Decreased") stock of \(current.name) by \(abs(change.delta))",
-            details: "Stock changed from \(change.previous) to \(change.new)"
+            action: "Stock de \(current.name) \(change.delta > 0 ? "augmenté" : "diminué") de \(abs(change.delta))",
+            details: "Stock passé de \(change.previous) à \(change.new)"
         )
     }
 

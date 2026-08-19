@@ -51,7 +51,7 @@ struct AisleMedicinesView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
-        AisleMedicinesView(aisle: "Aisle 1", viewModel: .preview)
+        AisleMedicinesView(aisle: "Rayon 1", viewModel: .preview)
     }
 }
 #endif

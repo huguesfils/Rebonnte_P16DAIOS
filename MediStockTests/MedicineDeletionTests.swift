@@ -19,7 +19,7 @@ struct MedicineDeletionTests {
     // MARK: - delete
 
     @Test func deleteRemovesMedicineAndReloads() async {
-        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", stock: 7, aisle: "Aisle 2")]
+        mockMedicines.storedMedicines = ["1": .stub(id: "1", name: "Doliprane", stock: 7, aisle: "Rayon 2")]
         let sut = makeSUT()
         await sut.loadMedicines()
 
@@ -28,8 +28,8 @@ struct MedicineDeletionTests {
         #expect(didDelete)
         #expect(mockMedicines.deletedIds == ["1"])
         #expect(sut.medicines.isEmpty)
-        #expect(mockHistory.addedEntries.first?.action == "Deleted Doliprane")
-        #expect(mockHistory.addedEntries.first?.details == "Removed from Aisle 2, stock was 7")
+        #expect(mockHistory.addedEntries.first?.action == "Suppression de Doliprane")
+        #expect(mockHistory.addedEntries.first?.details == "Retiré de Rayon 2, stock de 7")
     }
 
     @Test func deleteFailureSurfacesErrorAndKeepsMedicine() async {

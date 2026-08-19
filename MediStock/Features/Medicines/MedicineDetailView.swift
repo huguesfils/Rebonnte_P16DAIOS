@@ -24,25 +24,19 @@ struct MedicineDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text(medicine?.name ?? draftName)
-                    .font(.largeTitle)
-                    .padding(.top, 20)
+        Form {
+            identitySection
 
-                medicineNameSection
+            stockSection
 
-                medicineStockSection
+            MedicineHistorySection(
+                entries: viewModel.history,
+                isLoading: viewModel.isLoadingHistory
+            )
 
-                medicineAisleSection
-
-                MedicineHistorySection(entries: viewModel.history)
-
-                deleteSection
-            }
-            .padding(.vertical)
+            deleteSection
         }
-        .navigationTitle("Détail du médicament")
+        .navigationTitle(medicine?.name ?? draftName)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadHistory(forMedicineId: medicineId)
@@ -64,88 +58,75 @@ struct MedicineDetailView: View {
     }
 }
 
+// MARK: - Sections
+
 extension MedicineDetailView {
-    private var medicineNameSection: some View {
-        VStack(alignment: .leading) {
-            Text("Nom")
-                .font(.headline)
-            TextField("Nom", text: $draftName)
-                .textFieldStyle(.roundedBorder)
-                .submitLabel(.done)
-                .onSubmit(saveDetails)
+    private var identitySection: some View {
+        Section {
+            LabeledContent("Nom") {
+                TextField("Nom", text: $draftName)
+                    .multilineTextAlignment(.trailing)
+                    .submitLabel(.done)
+                    .onSubmit(saveDetails)
+            }
 
-            invalidDetailsHint
-
-            Spacer().frame(height: 10)
+            LabeledContent("Rayon") {
+                TextField("Rayon", text: $draftAisle)
+                    .multilineTextAlignment(.trailing)
+                    .submitLabel(.done)
+                    .onSubmit(saveDetails)
+            }
+        } header: {
+            Text("Médicament")
+        } footer: {
+            if !areDetailsValid {
+                Text("Le nom et le rayon ne peuvent pas être vides.")
+                    .foregroundStyle(.red)
+            }
         }
-        .padding(.horizontal)
+    }
+
+    private var stockSection: some View {
+        Section("Stock") {
+            HStack {
+                Button("Diminuer le stock", systemImage: "minus") {
+                    Task { await viewModel.decreaseStock(medicineId: medicineId) }
+                }
+                .disabled(draftStock == 0)
+
+                Spacer()
+
+                TextField("Stock", value: $draftStock, format: .number)
+                    .multilineTextAlignment(.center)
+                    .keyboardType(.numberPad)
+                    .font(.title3.monospacedDigit())
+                    .submitLabel(.done)
+                    .onSubmit(saveStock)
+                    .frame(maxWidth: 100)
+
+                Spacer()
+
+                Button("Augmenter le stock", systemImage: "plus") {
+                    Task { await viewModel.increaseStock(medicineId: medicineId) }
+                }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.circle)
+        }
+    }
+
+    private var deleteSection: some View {
+        Section {
+            Button("Supprimer ce médicament", systemImage: "trash", role: .destructive) {
+                isConfirmingDeletion = true
+            }
+            .frame(maxWidth: .infinity)
+        }
     }
 
     private var areDetailsValid: Bool {
         MedicineInput.isValid(name: draftName, aisle: draftAisle, stock: draftStock)
-    }
-
-    @ViewBuilder
-    private var invalidDetailsHint: some View {
-        if !areDetailsValid {
-            Text("Le nom et le rayon ne peuvent pas être vides.")
-                .font(.footnote)
-                .foregroundStyle(.red)
-                .accessibilityLabel("Saisie invalide : le nom et le rayon ne peuvent pas être vides")
-        }
-    }
-
-    private var medicineStockSection: some View {
-        VStack(alignment: .leading) {
-            Text("Stock")
-                .font(.headline)
-            HStack {
-                Button("Diminuer le stock", systemImage: "minus.circle") {
-                    Task { await viewModel.decreaseStock(medicineId: medicineId) }
-                }
-                .labelStyle(.iconOnly)
-                .font(.title)
-                .foregroundStyle(.red)
-
-                TextField("Stock", value: $draftStock, formatter: NumberFormatter())
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numberPad)
-                    .frame(width: 100)
-                    .submitLabel(.done)
-                    .onSubmit(saveStock)
-
-                Button("Augmenter le stock", systemImage: "plus.circle") {
-                    Task { await viewModel.increaseStock(medicineId: medicineId) }
-                }
-                .labelStyle(.iconOnly)
-                .font(.title)
-                .foregroundStyle(.green)
-            }
-            .padding(.bottom, 10)
-        }
-        .padding(.horizontal)
-    }
-
-    private var medicineAisleSection: some View {
-        VStack(alignment: .leading) {
-            Text("Rayon")
-                .font(.headline)
-            TextField("Rayon", text: $draftAisle)
-                .textFieldStyle(.roundedBorder)
-                .submitLabel(.done)
-                .onSubmit(saveDetails)
-                .padding(.bottom, 10)
-        }
-        .padding(.horizontal)
-    }
-
-    private var deleteSection: some View {
-        Button("Supprimer ce médicament", systemImage: "trash", role: .destructive) {
-            isConfirmingDeletion = true
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 20)
-        .padding(.horizontal)
     }
 
     // MARK: - Actions
@@ -177,7 +158,7 @@ extension MedicineDetailView {
 #Preview {
     NavigationStack {
         MedicineDetailView(
-            medicine: Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Aisle 1"),
+            medicine: Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Rayon 1"),
             viewModel: .preview
         )
     }
