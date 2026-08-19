@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AllMedicinesView: View {
+struct MedicineListView: View {
     private let viewModel: MedicineStockViewModel
 
     @State private var filterText = ""
@@ -94,9 +94,27 @@ struct AllMedicinesView: View {
     }
 }
 
+// MARK: - Sorting
+
+private enum SortOption: String, CaseIterable, Identifiable {
+    case none
+    case name
+    case stock
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .none: "Aucun"
+        case .name: "Nom"
+        case .stock: "Stock"
+        }
+    }
+}
+
 #if DEBUG
 #Preview {
-    AllMedicinesView(viewModel: .preview)
+    MedicineListView(viewModel: .preview)
         .environment(DIContainer.preview.sessionManager)
 }
 #endif

@@ -14,7 +14,7 @@ struct MainTabView: View {
             }
 
             Tab("Médicaments", systemImage: "square.grid.2x2") {
-                AllMedicinesView(viewModel: viewModel)
+                MedicineListView(viewModel: viewModel)
             }
         }
         .errorAlert($viewModel.errorMessage)

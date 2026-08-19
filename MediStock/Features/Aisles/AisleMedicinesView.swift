@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MedicineListView: View {
+struct AisleMedicinesView: View {
     private let aisle: String
     private let viewModel: MedicineStockViewModel
 
@@ -51,7 +51,7 @@ struct MedicineListView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
-        MedicineListView(aisle: "Aisle 1", viewModel: .preview)
+        AisleMedicinesView(aisle: "Aisle 1", viewModel: .preview)
     }
 }
 #endif

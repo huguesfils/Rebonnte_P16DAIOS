@@ -42,7 +42,7 @@ struct AisleListView: View {
             .accessibilityHint("Affiche les médicaments de ce rayon")
         }
         .navigationDestination(for: String.self) { aisle in
-            MedicineListView(aisle: aisle, viewModel: viewModel)
+            AisleMedicinesView(aisle: aisle, viewModel: viewModel)
         }
         .refreshable {
             await viewModel.loadMedicines()
