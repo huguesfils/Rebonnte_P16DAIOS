@@ -71,15 +71,4 @@ extension DIContainer {
     }
 }
 
-extension MedicineStockViewModel {
-    @MainActor
-    static var preview: MedicineStockViewModel {
-        let container = DIContainer.preview
-        return MedicineStockViewModel(
-            medicineRepository: container.medicineRepository,
-            historyRepository: container.historyRepository,
-            authService: container.authService
-        )
-    }
-}
 #endif

@@ -5,6 +5,7 @@ struct DIContainer {
     let historyRepository: HistoryRepository
     let authService: AuthService
     let sessionManager: SessionManager
+    let medicineStore: MedicineStore
     let viewModelFactory: ViewModelFactory
 
     @MainActor
@@ -17,10 +18,17 @@ struct DIContainer {
         self.historyRepository = historyRepository
         self.authService = authService
         self.sessionManager = SessionManager(authService: authService)
-        self.viewModelFactory = ViewModelFactory(
+
+        let medicineStore = MedicineStore(
             medicineRepository: medicineRepository,
             historyRepository: historyRepository,
             authService: authService
+        )
+        self.medicineStore = medicineStore
+        self.viewModelFactory = ViewModelFactory(
+            historyRepository: historyRepository,
+            authService: authService,
+            medicineStore: medicineStore
         )
     }
 

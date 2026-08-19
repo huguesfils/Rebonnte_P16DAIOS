@@ -61,9 +61,11 @@ Le `DIContainer` est construit une fois dans `MediStockApp.init()` et détient l
 
 Les modèles de domaine ne dépendent pas du SDK : le mapping Firestore est manuel, dans les implémentations de repository.
 
+`MedicineStore` est l'unique propriétaire de la collection `medicines` en mémoire : il porte la lecture gardée, les mutations et l'écriture du journal d'audit, et propage ses erreurs. Chaque écran a son propre ViewModel, qui ne porte que sa dérivation — tri et filtre pour la liste, regroupement pour les rayons, historique pour le détail — et son propre message d'erreur.
+
 ## Stratégie de lecture des données
 
-La collection `medicines` est lue **intégralement, une fois par session** (`MedicineStockViewModel.loadMedicinesIfNeeded()`), puis triée et filtrée en mémoire. Ce choix est délibéré ; il est documenté ici parce qu'il porte une limite de montée en charge.
+La collection `medicines` est lue **intégralement, une fois par session** (`MedicineStore.loadIfNeeded()`), puis triée et filtrée en mémoire. Le store est détenu par le `DIContainer` et s'invalide de lui-même au changement d'utilisateur (`loadedForUserId`) : une reconnexion sous un autre compte repart d'une collection vide et relit. Ce choix est délibéré ; il est documenté ici parce qu'il porte une limite de montée en charge.
 
 ### Pourquoi pas de pagination
 

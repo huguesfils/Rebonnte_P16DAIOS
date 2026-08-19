@@ -1,32 +1,29 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var viewModel: MedicineStockViewModel
+    private let container: DIContainer
 
     init(container: DIContainer) {
-        _viewModel = State(initialValue: container.viewModelFactory.makeMedicineStockViewModel())
+        self.container = container
     }
 
     var body: some View {
         TabView {
             Tab("Rayons", systemImage: "list.dash") {
-                AisleListView(viewModel: viewModel)
+                AisleListView(container: container)
             }
 
             Tab("Médicaments", systemImage: "square.grid.2x2") {
-                MedicineListView(viewModel: viewModel)
+                MedicineListView(container: container)
             }
-        }
-        .errorAlert($viewModel.errorMessage)
-        .task {
-            await viewModel.loadMedicinesIfNeeded()
         }
     }
 }
 
 #if DEBUG
 #Preview {
-    MainTabView(container: .preview)
-        .environment(DIContainer.preview.sessionManager)
+    let container = DIContainer.preview
+    MainTabView(container: container)
+        .environment(container.sessionManager)
 }
 #endif

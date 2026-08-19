@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddMedicineButton: View {
-    let viewModel: MedicineStockViewModel
+    let container: DIContainer
 
     @State private var isPresentingForm = false
 
@@ -10,18 +10,19 @@ struct AddMedicineButton: View {
             isPresentingForm = true
         }
         .sheet(isPresented: $isPresentingForm) {
-            AddMedicineView(viewModel: viewModel)
+            AddMedicineView(container: container)
         }
     }
 }
 
 #if DEBUG
 #Preview {
+    let container = DIContainer.preview
     NavigationStack {
         Text("Contenu")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    AddMedicineButton(viewModel: .preview)
+                    AddMedicineButton(container: container)
                 }
             }
     }

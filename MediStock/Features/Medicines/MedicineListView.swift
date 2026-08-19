@@ -1,34 +1,33 @@
 import SwiftUI
 
 struct MedicineListView: View {
-    private let viewModel: MedicineStockViewModel
+    private let container: DIContainer
+    @State private var viewModel: MedicineListViewModel
 
-    @State private var filterText = ""
-    @State private var sortOption: SortOption = .none
-
-    init(viewModel: MedicineStockViewModel) {
-        self.viewModel = viewModel
+    init(container: DIContainer) {
+        self.container = container
+        _viewModel = State(initialValue: container.viewModelFactory.makeMedicineListViewModel())
     }
 
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.isLoadingMedicines && viewModel.medicines.isEmpty {
+                if viewModel.isLoading && viewModel.isStockEmpty {
                     ProgressView("Chargement des médicaments…")
-                } else if viewModel.medicines.isEmpty {
+                } else if viewModel.isStockEmpty {
                     ContentUnavailableView(
                         "Aucun médicament",
                         systemImage: "pills",
                         description: Text("Ajoutez un premier médicament pour démarrer votre stock.")
                     )
-                } else if filteredAndSortedMedicines.isEmpty {
-                    ContentUnavailableView.search(text: filterText)
+                } else if viewModel.filteredAndSortedMedicines.isEmpty {
+                    ContentUnavailableView.search(text: viewModel.filterText)
                 } else {
                     list
                 }
             }
             .navigationTitle("Médicaments")
-            .searchable(text: $filterText, prompt: "Rechercher")
+            .searchable(text: $viewModel.filterText, prompt: "Rechercher")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     SignOutButton()
@@ -37,15 +36,19 @@ struct MedicineListView: View {
                     sortMenu
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    AddMedicineButton(viewModel: viewModel)
+                    AddMedicineButton(container: container)
                 }
             }
+        }
+        .errorAlert($viewModel.errorMessage)
+        .task {
+            await viewModel.loadIfNeeded()
         }
     }
 
     private var sortMenu: some View {
         Menu {
-            Picker("Trier par", selection: $sortOption) {
+            Picker("Trier par", selection: $viewModel.sortOption) {
                 ForEach(SortOption.allCases) { option in
                     Text(option.title).tag(option)
                 }
@@ -53,7 +56,7 @@ struct MedicineListView: View {
         } label: {
             Label(
                 "Trier par",
-                systemImage: sortOption == .none
+                systemImage: viewModel.sortOption == .none
                     ? "arrow.up.arrow.down"
                     : "arrow.up.arrow.down.circle.fill"
             )
@@ -62,63 +65,27 @@ struct MedicineListView: View {
 
     private var list: some View {
         List {
-            ForEach(filteredAndSortedMedicines) { medicine in
+            ForEach(viewModel.filteredAndSortedMedicines) { medicine in
                 NavigationLink {
-                    MedicineDetailView(medicine: medicine, viewModel: viewModel)
+                    MedicineDetailView(medicineId: medicine.id, container: container)
                 } label: {
                     MedicineRow(medicine: medicine)
                 }
             }
             .onDelete { offsets in
-                Task { await viewModel.delete(atOffsets: offsets, in: filteredAndSortedMedicines) }
+                Task { await viewModel.delete(atOffsets: offsets) }
             }
         }
         .refreshable {
-            await viewModel.loadMedicines()
-        }
-    }
-
-    private var filteredAndSortedMedicines: [Medicine] {
-        var medicines = viewModel.medicines
-
-        if !filterText.isEmpty {
-            medicines = medicines.filter { $0.name.localizedCaseInsensitiveContains(filterText) }
-        }
-
-        switch sortOption {
-        case .name:
-            medicines.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        case .stock:
-            medicines.sort { $0.stock < $1.stock }
-        case .none:
-            break
-        }
-
-        return medicines
-    }
-}
-
-// MARK: - Sorting
-
-private enum SortOption: String, CaseIterable, Identifiable {
-    case none
-    case name
-    case stock
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .none: "Aucun"
-        case .name: "Nom"
-        case .stock: "Stock"
+            await viewModel.refresh()
         }
     }
 }
 
 #if DEBUG
 #Preview {
-    MedicineListView(viewModel: .preview)
-        .environment(DIContainer.preview.sessionManager)
+    let container = DIContainer.preview
+    MedicineListView(container: container)
+        .environment(container.sessionManager)
 }
 #endif

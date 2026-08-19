@@ -3,33 +3,24 @@ import SwiftUI
 struct AddMedicineView: View {
     @Environment(\.dismiss) private var dismiss
 
-    private let viewModel: MedicineStockViewModel
+    @State private var viewModel: AddMedicineViewModel
 
-    @State private var name = ""
-    @State private var aisle = ""
-    @State private var stock = 0
-    @State private var isSaving = false
-
-    init(viewModel: MedicineStockViewModel) {
-        self.viewModel = viewModel
-    }
-
-    private var canSave: Bool {
-        !isSaving && MedicineInput.isValid(name: name, aisle: aisle, stock: stock)
+    init(container: DIContainer) {
+        _viewModel = State(initialValue: container.viewModelFactory.makeAddMedicineViewModel())
     }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Médicament") {
-                    TextField("Nom", text: $name)
+                    TextField("Nom", text: $viewModel.name)
                         .textInputAutocapitalization(.words)
-                    TextField("Rayon", text: $aisle)
+                    TextField("Rayon", text: $viewModel.aisle)
                         .textInputAutocapitalization(.words)
                 }
 
                 Section("Stock initial") {
-                    Stepper("\(stock)", value: $stock, in: 0...9999)
+                    Stepper("\(viewModel.stock)", value: $viewModel.stock, in: 0...9999)
                 }
             }
             .navigationTitle("Nouveau médicament")
@@ -40,26 +31,22 @@ struct AddMedicineView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: save) {
-                        if isSaving {
+                        if viewModel.isSaving {
                             ProgressView()
                         } else {
                             Text("Ajouter").bold()
                         }
                     }
-                    .disabled(!canSave)
+                    .disabled(!viewModel.canSave)
                 }
             }
         }
+        .errorAlert($viewModel.errorMessage)
     }
 
     private func save() {
-        isSaving = true
-
         Task {
-            let didSave = await viewModel.addMedicine(name: name, stock: stock, aisle: aisle)
-            isSaving = false
-
-            if didSave {
+            if await viewModel.save() {
                 dismiss()
             }
         }
@@ -68,6 +55,6 @@ struct AddMedicineView: View {
 
 #if DEBUG
 #Preview {
-    AddMedicineView(viewModel: .preview)
+    AddMedicineView(container: .preview)
 }
 #endif

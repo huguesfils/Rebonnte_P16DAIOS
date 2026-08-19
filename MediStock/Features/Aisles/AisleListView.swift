@@ -1,16 +1,18 @@
 import SwiftUI
 
 struct AisleListView: View {
-    private let viewModel: MedicineStockViewModel
+    private let container: DIContainer
+    @State private var viewModel: AisleListViewModel
 
-    init(viewModel: MedicineStockViewModel) {
-        self.viewModel = viewModel
+    init(container: DIContainer) {
+        self.container = container
+        _viewModel = State(initialValue: container.viewModelFactory.makeAisleListViewModel())
     }
 
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.isLoadingMedicines && viewModel.aisles.isEmpty {
+                if viewModel.isLoading && viewModel.aisles.isEmpty {
                     ProgressView("Chargement des rayons…")
                 } else if viewModel.aisles.isEmpty {
                     ContentUnavailableView(
@@ -28,9 +30,13 @@ struct AisleListView: View {
                     SignOutButton()
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    AddMedicineButton(viewModel: viewModel)
+                    AddMedicineButton(container: container)
                 }
             }
+        }
+        .errorAlert($viewModel.errorMessage)
+        .task {
+            await viewModel.loadIfNeeded()
         }
     }
 
@@ -42,17 +48,18 @@ struct AisleListView: View {
             .accessibilityHint("Affiche les médicaments de ce rayon")
         }
         .navigationDestination(for: String.self) { aisle in
-            AisleMedicinesView(aisle: aisle, viewModel: viewModel)
+            AisleMedicinesView(aisle: aisle, container: container)
         }
         .refreshable {
-            await viewModel.loadMedicines()
+            await viewModel.refresh()
         }
     }
 }
 
 #if DEBUG
 #Preview {
-    AisleListView(viewModel: .preview)
-        .environment(DIContainer.preview.sessionManager)
+    let container = DIContainer.preview
+    AisleListView(container: container)
+        .environment(container.sessionManager)
 }
 #endif

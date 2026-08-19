@@ -1,21 +1,19 @@
 import SwiftUI
 
 struct AisleMedicinesView: View {
-    private let aisle: String
-    private let viewModel: MedicineStockViewModel
+    private let container: DIContainer
+    @State private var viewModel: AisleMedicinesViewModel
 
-    init(aisle: String, viewModel: MedicineStockViewModel) {
-        self.aisle = aisle
-        self.viewModel = viewModel
-    }
-
-    private var medicines: [Medicine] {
-        viewModel.medicines(inAisle: aisle)
+    init(aisle: String, container: DIContainer) {
+        self.container = container
+        _viewModel = State(
+            initialValue: container.viewModelFactory.makeAisleMedicinesViewModel(aisle: aisle)
+        )
     }
 
     var body: some View {
         Group {
-            if medicines.isEmpty {
+            if viewModel.medicines.isEmpty {
                 ContentUnavailableView(
                     "Rayon vide",
                     systemImage: "tray",
@@ -25,33 +23,35 @@ struct AisleMedicinesView: View {
                 list
             }
         }
-        .navigationTitle(aisle)
+        .navigationTitle(viewModel.aisle)
         .navigationBarTitleDisplayMode(.inline)
+        .errorAlert($viewModel.errorMessage)
     }
 
     private var list: some View {
         List {
-            ForEach(medicines) { medicine in
+            ForEach(viewModel.medicines) { medicine in
                 NavigationLink {
-                    MedicineDetailView(medicine: medicine, viewModel: viewModel)
+                    MedicineDetailView(medicineId: medicine.id, container: container)
                 } label: {
                     MedicineRow(medicine: medicine)
                 }
             }
             .onDelete { offsets in
-                Task { await viewModel.delete(atOffsets: offsets, in: medicines) }
+                Task { await viewModel.delete(atOffsets: offsets) }
             }
         }
         .refreshable {
-            await viewModel.loadMedicines()
+            await viewModel.refresh()
         }
     }
 }
 
 #if DEBUG
 #Preview {
+    let container = DIContainer.preview
     NavigationStack {
-        AisleMedicinesView(aisle: "Rayon 1", viewModel: .preview)
+        AisleMedicinesView(aisle: "Rayon 1", container: container)
     }
 }
 #endif

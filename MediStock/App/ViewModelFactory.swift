@@ -1,18 +1,18 @@
 import Foundation
 
 struct ViewModelFactory {
-    private let medicineRepository: MedicineRepository
     private let historyRepository: HistoryRepository
     private let authService: AuthService
+    private let medicineStore: MedicineStore
 
     init(
-        medicineRepository: MedicineRepository,
         historyRepository: HistoryRepository,
-        authService: AuthService
+        authService: AuthService,
+        medicineStore: MedicineStore
     ) {
-        self.medicineRepository = medicineRepository
         self.historyRepository = historyRepository
         self.authService = authService
+        self.medicineStore = medicineStore
     }
 
     // MARK: - Auth
@@ -22,14 +22,36 @@ struct ViewModelFactory {
         LoginViewModel(authService: authService)
     }
 
+    // MARK: - Aisles
+
+    @MainActor
+    func makeAisleListViewModel() -> AisleListViewModel {
+        AisleListViewModel(store: medicineStore)
+    }
+
+    @MainActor
+    func makeAisleMedicinesViewModel(aisle: String) -> AisleMedicinesViewModel {
+        AisleMedicinesViewModel(aisle: aisle, store: medicineStore)
+    }
+
     // MARK: - Medicines
 
     @MainActor
-    func makeMedicineStockViewModel() -> MedicineStockViewModel {
-        MedicineStockViewModel(
-            medicineRepository: medicineRepository,
-            historyRepository: historyRepository,
-            authService: authService
+    func makeMedicineListViewModel() -> MedicineListViewModel {
+        MedicineListViewModel(store: medicineStore)
+    }
+
+    @MainActor
+    func makeMedicineDetailViewModel(medicineId: String) -> MedicineDetailViewModel {
+        MedicineDetailViewModel(
+            medicineId: medicineId,
+            store: medicineStore,
+            historyRepository: historyRepository
         )
+    }
+
+    @MainActor
+    func makeAddMedicineViewModel() -> AddMedicineViewModel {
+        AddMedicineViewModel(store: medicineStore)
     }
 }

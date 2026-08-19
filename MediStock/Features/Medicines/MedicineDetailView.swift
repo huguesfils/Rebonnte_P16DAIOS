@@ -3,24 +3,18 @@ import SwiftUI
 struct MedicineDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
-    private let medicineId: String
-    private let viewModel: MedicineStockViewModel
-
+    @State private var viewModel: MedicineDetailViewModel
     @State private var draftName: String
     @State private var draftAisle: String
     @State private var draftStock: Int
     @State private var isConfirmingDeletion = false
 
-    init(medicine: Medicine, viewModel: MedicineStockViewModel) {
-        medicineId = medicine.id
-        self.viewModel = viewModel
-        _draftName = State(initialValue: medicine.name)
-        _draftAisle = State(initialValue: medicine.aisle)
-        _draftStock = State(initialValue: medicine.stock)
-    }
-
-    private var medicine: Medicine? {
-        viewModel.medicine(withId: medicineId)
+    init(medicineId: String, container: DIContainer) {
+        let viewModel = container.viewModelFactory.makeMedicineDetailViewModel(medicineId: medicineId)
+        _viewModel = State(initialValue: viewModel)
+        _draftName = State(initialValue: viewModel.medicine?.name ?? "")
+        _draftAisle = State(initialValue: viewModel.medicine?.aisle ?? "")
+        _draftStock = State(initialValue: viewModel.medicine?.stock ?? 0)
     }
 
     var body: some View {
@@ -36,12 +30,13 @@ struct MedicineDetailView: View {
 
             deleteSection
         }
-        .navigationTitle(medicine?.name ?? draftName)
+        .navigationTitle(viewModel.medicine?.name ?? draftName)
         .navigationBarTitleDisplayMode(.inline)
+        .errorAlert($viewModel.errorMessage)
         .task {
-            await viewModel.loadHistory(forMedicineId: medicineId)
+            await viewModel.loadHistory()
         }
-        .onChange(of: medicine?.stock) { _, stock in
+        .onChange(of: viewModel.medicine?.stock) { _, stock in
             if let stock {
                 draftStock = stock
             }
@@ -90,7 +85,7 @@ extension MedicineDetailView {
         Section("Stock") {
             HStack {
                 Button("Diminuer le stock", systemImage: "minus") {
-                    Task { await viewModel.decreaseStock(medicineId: medicineId) }
+                    Task { await viewModel.decreaseStock() }
                 }
                 .disabled(draftStock == 0)
 
@@ -107,7 +102,7 @@ extension MedicineDetailView {
                 Spacer()
 
                 Button("Augmenter le stock", systemImage: "plus") {
-                    Task { await viewModel.increaseStock(medicineId: medicineId) }
+                    Task { await viewModel.increaseStock() }
                 }
             }
             .labelStyle(.iconOnly)
@@ -133,7 +128,7 @@ extension MedicineDetailView {
 
     private func delete() {
         Task {
-            if await viewModel.delete(medicineId: medicineId) {
+            if await viewModel.delete() {
                 dismiss()
             }
         }
@@ -143,24 +138,22 @@ extension MedicineDetailView {
         guard areDetailsValid else { return }
 
         Task {
-            await viewModel.updateDetails(medicineId: medicineId, name: draftName, aisle: draftAisle)
+            await viewModel.updateDetails(name: draftName, aisle: draftAisle)
         }
     }
 
     private func saveStock() {
         Task {
-            await viewModel.setStock(medicineId: medicineId, to: draftStock)
+            await viewModel.setStock(to: draftStock)
         }
     }
 }
 
 #if DEBUG
 #Preview {
+    let container = DIContainer.preview
     NavigationStack {
-        MedicineDetailView(
-            medicine: Medicine(id: "preview-1", name: "Doliprane", stock: 12, aisle: "Rayon 1"),
-            viewModel: .preview
-        )
+        MedicineDetailView(medicineId: "preview-1", container: container)
     }
 }
 #endif
