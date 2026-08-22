@@ -2,6 +2,24 @@ import Foundation
 import Testing
 @testable import MediStock
 
+// MARK: - Sendable fixtures
+
+struct DocumentFields: @unchecked Sendable {
+    let value: [String: Any]
+
+    init(_ value: [String: Any]) {
+        self.value = value
+    }
+}
+
+struct TransactionPayload: @unchecked Sendable {
+    let value: Any?
+
+    init(_ value: Any?) {
+        self.value = value
+    }
+}
+
 struct FirestoreMappingTests {
     // MARK: - Medicine
 
@@ -27,15 +45,15 @@ struct FirestoreMappingTests {
     }
 
     @Test("Document médicament incomplet ou mal typé", arguments: [
-        ["stock": 12, "aisle": "A"] as [String: Any],
-        ["name": "Doliprane", "aisle": "A"],
-        ["name": "Doliprane", "stock": 12],
-        ["name": "Doliprane", "stock": "douze", "aisle": "A"],
-        ["name": 42, "stock": 12, "aisle": "A"],
-        [:]
+        DocumentFields(["stock": 12, "aisle": "A"]),
+        DocumentFields(["name": "Doliprane", "aisle": "A"]),
+        DocumentFields(["name": "Doliprane", "stock": 12]),
+        DocumentFields(["name": "Doliprane", "stock": "douze", "aisle": "A"]),
+        DocumentFields(["name": 42, "stock": 12, "aisle": "A"]),
+        DocumentFields([:])
     ])
-    func malformedMedicineDocumentsAreDropped(data: [String: Any]) {
-        #expect(FirestoreMedicineRepository.makeMedicine(id: "doc-1", data: data) == nil)
+    func malformedMedicineDocumentsAreDropped(document: DocumentFields) {
+        #expect(FirestoreMedicineRepository.makeMedicine(id: "doc-1", data: document.value) == nil)
     }
 
     // MARK: - History
@@ -78,14 +96,14 @@ struct FirestoreMappingTests {
     }
 
     @Test("Document d'historique incomplet", arguments: [
-        ["user": "u", "action": "a", "details": "d"] as [String: Any],
-        ["medicineId": "m", "action": "a", "details": "d"],
-        ["medicineId": "m", "user": "u", "details": "d"],
-        ["medicineId": "m", "user": "u", "action": "a"],
-        [:]
+        DocumentFields(["user": "u", "action": "a", "details": "d"]),
+        DocumentFields(["medicineId": "m", "action": "a", "details": "d"]),
+        DocumentFields(["medicineId": "m", "user": "u", "details": "d"]),
+        DocumentFields(["medicineId": "m", "user": "u", "action": "a"]),
+        DocumentFields([:])
     ])
-    func malformedHistoryDocumentsAreDropped(data: [String: Any]) {
-        var payload = data
+    func malformedHistoryDocumentsAreDropped(document: DocumentFields) {
+        var payload = document.value
         if payload["timestamp"] == nil, !payload.isEmpty {
             payload["timestamp"] = Date()
         }
@@ -137,15 +155,18 @@ struct FirestoreMappingTests {
     }
 
     @Test("Payload de transaction inexploitable", arguments: [
-        nil,
-        "pas un dictionnaire" as Any,
-        [:] as [String: Any],
-        [FirestoreMedicineRepository.previousKey: 10] as [String: Any],
-        [FirestoreMedicineRepository.previousKey: "dix", FirestoreMedicineRepository.newKey: 11] as [String: Any]
+        TransactionPayload(nil),
+        TransactionPayload("pas un dictionnaire"),
+        TransactionPayload([String: Any]()),
+        TransactionPayload([FirestoreMedicineRepository.previousKey: 10]),
+        TransactionPayload([
+            FirestoreMedicineRepository.previousKey: "dix",
+            FirestoreMedicineRepository.newKey: 11
+        ])
     ])
-    func malformedPayloadThrowsInvalidData(payload: Any?) {
+    func malformedPayloadThrowsInvalidData(payload: TransactionPayload) {
         #expect(throws: MediStockError.invalidData) {
-            try FirestoreMedicineRepository.decodeStockChange(from: payload)
+            try FirestoreMedicineRepository.decodeStockChange(from: payload.value)
         }
     }
 }
