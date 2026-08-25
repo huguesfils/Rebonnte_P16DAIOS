@@ -6,6 +6,7 @@ Application iOS de gestion des stocks de médicaments : suivi par rayon, mouveme
 
 - Xcode 16 ou supérieur (le projet utilise les dossiers synchronisés, `objectVersion 70`)
 - iOS 18 minimum
+- Swift 6, **mode langage strict** : la cible compile sans erreur ni avertissement de concurrence
 - [SwiftLint](https://github.com/realm/SwiftLint) pour le lint local : `brew install swiftlint`
 
 ## Démarrer
@@ -50,7 +51,7 @@ swiftlint lint
 ```
 MediStock/
 ├── App/          point d'entrée, DIContainer, SessionManager, routage
-├── Features/     un dossier par périmètre fonctionnel (Auth, Aisles, Medicines)
+├── Features/     un dossier par périmètre fonctionnel (Auth, Aisles, Medicines, Profile)
 ├── Network/
 │   ├── Protocols/            frontière testable
 │   └── Services/Firebase/    seuls fichiers important le SDK Firebase
@@ -102,6 +103,21 @@ firebase deploy --only firestore:rules
 ```
 
 `medicines` est accessible en lecture et écriture à tout utilisateur authentifié. `history` est un journal d'audit : lisible et alimentable une fois connecté, jamais modifiable ni supprimable depuis un client, et une entrée ne peut porter que l'identifiant de son auteur.
+
+## Compte et suppression
+
+L'onglet **Profil** expose l'adresse du compte, la version de l'application et la suppression du compte. Cette dernière répond à la directive App Store **5.1.1(v)** : une application qui permet la création de compte doit permettre sa suppression en son sein.
+
+La suppression demande le mot de passe et **réauthentifie avant de supprimer**. Ce n'est pas un excès de prudence : `user.delete()` échoue avec `requiresRecentLogin` dès que la session n'est plus récente, et l'application persistant la session, le cas est la règle plutôt que l'exception. Réauthentifier systématiquement évite à l'utilisateur un refus sans issue, et vaut confirmation d'identité sur une action irréversible.
+
+### Ce que la suppression ne touche pas
+
+Seul l'enregistrement Firebase Authentication est supprimé. **Ni la collection `medicines`, ni le journal `history`.** C'est une conséquence de la nature de l'application, pas une limite d'implémentation :
+
+- MediStock est un **outil professionnel partagé** : plusieurs opérateurs d'un même établissement travaillent sur le même stock. `Medicine` ne comporte aucun champ d'auteur — la donnée décrit l'officine, pas la personne connectée. Le départ d'un opérateur ne doit pas effacer les données de ses collègues ;
+- `history` est un journal d'audit, rendu non modifiable et non supprimable par les règles Firestore ci-dessus. C'est la condition de sa valeur probante : un journal réinscriptible ne prouve rien. Ses entrées portent l'e-mail et l'identifiant de leur auteur, qui subsistent donc après la suppression du compte.
+
+Ce dernier point est une donnée personnelle conservée : l'écran de confirmation l'annonce à l'utilisateur **avant** qu'il ne valide, et la politique de confidentialité doit le déclarer et fixer une durée de conservation. Une anonymisation différée — substituer une valeur neutre à l'e-mail au terme de cette durée, en gardant la trace de l'action — suppose une fonction serveur, hors du périmètre d'une application cliente.
 
 ## Tests
 
