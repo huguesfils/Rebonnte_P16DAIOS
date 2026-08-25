@@ -5,6 +5,7 @@ import Foundation
 final class SessionManager {
     private(set) var currentUser: AppUser?
     private(set) var currentScreen: AppScreen = .loading
+    private(set) var isDeletingAccount = false
     var errorMessage: String?
 
     private let authService: AuthService
@@ -44,6 +45,21 @@ final class SessionManager {
     func signOut() {
         do {
             try authService.signOut()
+            currentUser = nil
+            currentScreen = .login
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func deleteAccount(password: String) async {
+        guard !isDeletingAccount else { return }
+
+        isDeletingAccount = true
+        defer { isDeletingAccount = false }
+
+        do {
+            try await authService.deleteAccount(password: password)
             currentUser = nil
             currentScreen = .login
         } catch {

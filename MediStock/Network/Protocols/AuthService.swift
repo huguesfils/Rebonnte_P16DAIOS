@@ -5,6 +5,7 @@ protocol AuthService: Sendable {
     func signIn(email: String, password: String) async throws -> AppUser
     func signUp(email: String, password: String) async throws -> AppUser
     func signOut() throws
+    func deleteAccount(password: String) async throws
     func observeAuthState(
         _ onChange: @escaping @Sendable @MainActor (AppUser?) -> Void
     ) -> any AuthStateObservation

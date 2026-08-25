@@ -11,6 +11,7 @@ enum MediStockError: LocalizedError, Equatable {
     case weakPassword
     case invalidCredentials
     case invalidEmail
+    case requiresRecentLogin
     case unknown(String)
 
     var errorDescription: String? {
@@ -35,6 +36,8 @@ enum MediStockError: LocalizedError, Equatable {
             "Email ou mot de passe incorrect."
         case .invalidEmail:
             "L'adresse email est invalide."
+        case .requiresRecentLogin:
+            "Par sécurité, reconnectez-vous avant de supprimer votre compte."
         case .unknown(let message):
             message
         }

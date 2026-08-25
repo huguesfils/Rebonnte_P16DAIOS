@@ -16,6 +16,10 @@ struct MainTabView: View {
             Tab("Médicaments", systemImage: "square.grid.2x2") {
                 MedicineListView(container: container)
             }
+
+            Tab("Profil", systemImage: "person.crop.circle") {
+                ProfileView(container: container)
+            }
         }
     }
 }

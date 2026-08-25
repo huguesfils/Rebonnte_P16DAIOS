@@ -34,6 +34,25 @@ struct FirebaseAuthService: AuthService {
         }
     }
 
+    func deleteAccount(password: String) async throws {
+        guard let user = Auth.auth().currentUser, let email = user.email else {
+            throw MediStockError.notAuthenticated
+        }
+
+        guard !password.isEmpty else {
+            throw MediStockError.invalidCredentials
+        }
+
+        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+
+        do {
+            try await user.reauthenticate(with: credential)
+            try await user.delete()
+        } catch {
+            throw Self.mapAuthError(error)
+        }
+    }
+
     // MARK: - Observation
 
     func observeAuthState(
@@ -71,6 +90,8 @@ struct FirebaseAuthService: AuthService {
              AuthErrorCode.userNotFound.rawValue,
              AuthErrorCode.invalidCredential.rawValue:
             return .invalidCredentials
+        case AuthErrorCode.requiresRecentLogin.rawValue:
+            return .requiresRecentLogin
         case AuthErrorCode.networkError.rawValue:
             return .networkUnavailable
         default:

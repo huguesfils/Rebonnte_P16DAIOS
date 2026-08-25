@@ -6,6 +6,8 @@ final class MockAuthService: AuthService, @unchecked Sendable {
     var errorToThrow: Error?
 
     private(set) var signOutCallCount = 0
+    private(set) var deleteAccountCallCount = 0
+    private(set) var lastDeletionPassword: String?
     private var listener: (@Sendable @MainActor (AppUser?) -> Void)?
 
     init(currentUser: AppUser? = AppUser(id: "test-user", email: "test@medistock.app")) {
@@ -29,6 +31,13 @@ final class MockAuthService: AuthService, @unchecked Sendable {
     func signOut() throws {
         if let errorToThrow { throw errorToThrow }
         signOutCallCount += 1
+        currentUser = nil
+    }
+
+    func deleteAccount(password: String) async throws {
+        lastDeletionPassword = password
+        if let errorToThrow { throw errorToThrow }
+        deleteAccountCallCount += 1
         currentUser = nil
     }
 

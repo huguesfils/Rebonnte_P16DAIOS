@@ -43,6 +43,8 @@ struct PreviewAuthService: AuthService {
 
     func signOut() throws {}
 
+    func deleteAccount(password: String) async throws {}
+
     func observeAuthState(
         _ onChange: @escaping @Sendable @MainActor (AppUser?) -> Void
     ) -> any AuthStateObservation {

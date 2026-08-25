@@ -22,6 +22,11 @@ struct ViewModelFactory {
         LoginViewModel(authService: authService)
     }
 
+    @MainActor
+    func makeProfileViewModel() -> ProfileViewModel {
+        ProfileViewModel(authService: authService, appInfo: AppInfo(bundle: .main))
+    }
+
     // MARK: - Aisles
 
     @MainActor
