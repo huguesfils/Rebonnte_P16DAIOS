@@ -53,14 +53,19 @@ MediStock/
 ├── App/          point d'entrée, DIContainer, SessionManager, routage
 ├── Features/     un dossier par périmètre fonctionnel (Auth, Aisles, Medicines, Profile)
 ├── Network/
-│   ├── Protocols/            frontière testable
-│   └── Services/Firebase/    seuls fichiers important le SDK Firebase
+│   ├── Protocols/                frontière testable
+│   ├── Services/Firebase/        seuls fichiers important le SDK Firebase
+│   └── Services/Connectivity/    garde de connectivité (décorateurs de repository)
 └── Shared/       modèles de domaine et vues réutilisables
 ```
 
 Le `DIContainer` est construit une fois dans `MediStockApp.init()` et détient les services sous forme de protocoles. Les ViewModels sont injectés par constructeur, sans valeur par défaut, ce qui les rend instanciables avec des doubles en test.
 
 Les modèles de domaine ne dépendent pas du SDK : le mapping Firestore est manuel, dans les implémentations de repository.
+
+Les repositories exposés par le container sont **décorés par un garde de connectivité** (`NetworkAwareMedicineRepository`, `NetworkAwareHistoryRepository`) qui lève `MediStockError.networkUnavailable` avant tout appel Firestore lorsque `NetworkMonitor` signale l'absence de réseau. C'est nécessaire parce que la persistance locale de Firestore, active par défaut, masque la perte de réseau : une lecture est servie par le cache sans erreur, et une écriture est mise en file localement sans jamais rendre la main tant que le serveur n'a pas accusé réception. Le garde transforme cet échec silencieux en échec immédiat et visible.
+
+Conséquence assumée : hors-ligne, la liste est **vide avec un message clair** plutôt que servie par le cache. `FirestoreErrorMapper` reste en place comme filet pour le cas « en ligne mais serveur injoignable ».
 
 `MedicineStore` est l'unique propriétaire de la collection `medicines` en mémoire : il porte la lecture gardée, les mutations et l'écriture du journal d'audit, et propage ses erreurs. Chaque écran a son propre ViewModel, qui ne porte que sa dérivation — tri et filtre pour la liste, regroupement pour les rayons, historique pour le détail — et son propre message d'erreur.
 

@@ -4,6 +4,7 @@ struct DIContainer {
     let medicineRepository: MedicineRepository
     let historyRepository: HistoryRepository
     let authService: AuthService
+    let networkMonitor: NetworkMonitor
     let sessionManager: SessionManager
     let medicineStore: MedicineStore
     let viewModelFactory: ViewModelFactory
@@ -12,21 +13,32 @@ struct DIContainer {
     init(
         medicineRepository: MedicineRepository,
         historyRepository: HistoryRepository,
-        authService: AuthService
+        authService: AuthService,
+        networkMonitor: NetworkMonitor
     ) {
-        self.medicineRepository = medicineRepository
-        self.historyRepository = historyRepository
+        let guardedMedicineRepository = NetworkAwareMedicineRepository(
+            wrapping: medicineRepository,
+            networkMonitor: networkMonitor
+        )
+        let guardedHistoryRepository = NetworkAwareHistoryRepository(
+            wrapping: historyRepository,
+            networkMonitor: networkMonitor
+        )
+
+        self.medicineRepository = guardedMedicineRepository
+        self.historyRepository = guardedHistoryRepository
         self.authService = authService
+        self.networkMonitor = networkMonitor
         self.sessionManager = SessionManager(authService: authService)
 
         let medicineStore = MedicineStore(
-            medicineRepository: medicineRepository,
-            historyRepository: historyRepository,
+            medicineRepository: guardedMedicineRepository,
+            historyRepository: guardedHistoryRepository,
             authService: authService
         )
         self.medicineStore = medicineStore
         self.viewModelFactory = ViewModelFactory(
-            historyRepository: historyRepository,
+            historyRepository: guardedHistoryRepository,
             authService: authService,
             medicineStore: medicineStore
         )
@@ -37,7 +49,8 @@ struct DIContainer {
         self.init(
             medicineRepository: FirestoreMedicineRepository(),
             historyRepository: FirestoreHistoryRepository(),
-            authService: FirebaseAuthService()
+            authService: FirebaseAuthService(),
+            networkMonitor: NWPathNetworkMonitor()
         )
     }
 }

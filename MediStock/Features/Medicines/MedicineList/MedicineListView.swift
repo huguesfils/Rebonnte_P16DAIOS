@@ -15,11 +15,15 @@ struct MedicineListView: View {
                 if viewModel.isLoading && viewModel.isStockEmpty {
                     ProgressView("Chargement des médicaments…")
                 } else if viewModel.isStockEmpty {
-                    ContentUnavailableView(
-                        "Aucun médicament",
-                        systemImage: "pills",
-                        description: Text("Ajoutez un premier médicament pour démarrer votre stock.")
-                    )
+                    ContentUnavailableView {
+                        Label("Aucun médicament", systemImage: "pills")
+                    } description: {
+                        Text("Ajoutez un premier médicament pour démarrer votre stock.")
+                    } actions: {
+                        Button("Réessayer") {
+                            Task { await viewModel.refresh() }
+                        }
+                    }
                 } else if viewModel.filteredAndSortedMedicines.isEmpty {
                     ContentUnavailableView.search(text: viewModel.filterText)
                 } else {

@@ -63,14 +63,28 @@ struct MedicineStoreTests {
         #expect(sut.loadedForUserId == "test-user")
     }
 
-    @Test func loadingFlagsAreClearedAfterFailure() async {
+    @Test func aFailedLoadDoesNotMarkTheUserAsLoaded() async {
         mockMedicines.errorToThrow = MediStockError.networkUnavailable
         let sut = makeSUT()
 
         await sut.loadIfNeeded()
 
         #expect(!sut.isLoading)
-        #expect(sut.loadedForUserId == "test-user")
+        #expect(sut.loadedForUserId == nil)
+    }
+
+    @Test func loadIfNeededRetriesAfterAFailure() async {
+        mockMedicines.errorToThrow = MediStockError.networkUnavailable
+        let sut = makeSUT()
+        await sut.loadIfNeeded()
+
+        mockMedicines.errorToThrow = nil
+        mockMedicines.storedMedicines = ["1": .stub(id: "1")]
+        await sut.loadIfNeeded()
+
+        #expect(mockMedicines.fetchCallCount == 2)
+        #expect(sut.medicines.count == 1)
+        #expect(sut.loadError == nil)
     }
 
     @Test func loadMedicinesIfNeededReadsOnlyOnce() async {

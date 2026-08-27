@@ -122,13 +122,11 @@ final class MedicineStore {
     private func load() async {
         isLoading = true
         let userId = authService.currentUser?.id
-        defer {
-            isLoading = false
-            loadedForUserId = userId
-        }
+        defer { isLoading = false }
 
         do {
             medicines = try await medicineRepository.fetchMedicines()
+            loadedForUserId = userId
             loadError = nil
         } catch {
             loadError = error.localizedDescription

@@ -15,11 +15,15 @@ struct AisleListView: View {
                 if viewModel.isLoading && viewModel.aisles.isEmpty {
                     ProgressView("Chargement des rayons…")
                 } else if viewModel.aisles.isEmpty {
-                    ContentUnavailableView(
-                        "Aucun rayon",
-                        systemImage: "shippingbox",
-                        description: Text("Ajoutez un médicament pour créer votre premier rayon.")
-                    )
+                    ContentUnavailableView {
+                        Label("Aucun rayon", systemImage: "shippingbox")
+                    } description: {
+                        Text("Ajoutez un médicament pour créer votre premier rayon.")
+                    } actions: {
+                        Button("Réessayer") {
+                            Task { await viewModel.refresh() }
+                        }
+                    }
                 } else {
                     aisleList
                 }

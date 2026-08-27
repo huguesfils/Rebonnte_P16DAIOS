@@ -60,6 +60,12 @@ struct PreviewAuthStateObservation: AuthStateObservation {
     func cancel() {}
 }
 
+// MARK: - Network
+
+struct PreviewNetworkMonitor: NetworkMonitor {
+    let isConnected = true
+}
+
 // MARK: - Container
 
 extension DIContainer {
@@ -68,7 +74,8 @@ extension DIContainer {
         DIContainer(
             medicineRepository: PreviewMedicineRepository(),
             historyRepository: PreviewHistoryRepository(),
-            authService: PreviewAuthService()
+            authService: PreviewAuthService(),
+            networkMonitor: PreviewNetworkMonitor()
         )
     }
 }
