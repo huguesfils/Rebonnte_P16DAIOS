@@ -66,6 +66,7 @@ final class MedicineDetailViewModel {
     private func perform(_ mutation: () async throws -> Void) async {
         do {
             try await mutation()
+            await loadHistory()
         } catch {
             errorMessage = error.localizedDescription
         }

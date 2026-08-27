@@ -79,6 +79,40 @@ struct MedicineDetailViewModelTests {
         #expect(sut.medicine == nil)
     }
 
+    // MARK: - History refresh after a mutation
+
+    @Test func aStockChangeRefreshesTheHistory() async {
+        let sut = await makeLoadedSUT([.stub(id: "1", name: "Doliprane", stock: 10)])
+        await sut.loadHistory()
+        #expect(sut.history.isEmpty)
+
+        await sut.increaseStock()
+
+        #expect(sut.history.count == 1)
+        #expect(sut.history.first?.action == "Stock de Doliprane augmenté de 1")
+    }
+
+    @Test func renamingRefreshesTheHistory() async {
+        let sut = await makeLoadedSUT([.stub(id: "1", name: "Doliprane", aisle: "Rayon 1")])
+        await sut.loadHistory()
+
+        await sut.updateDetails(name: "Efferalgan", aisle: "Rayon 2")
+
+        #expect(sut.history.first?.action == "Modification de Efferalgan")
+    }
+
+    @Test func aFailedMutationLeavesTheHistoryUntouched() async {
+        let sut = await makeLoadedSUT([.stub(id: "1", stock: 10)])
+        await sut.loadHistory()
+        let fetchesSoFar = mockHistory.fetchCallCount
+        mockMedicines.errorToThrow = MediStockError.networkUnavailable
+
+        await sut.increaseStock()
+
+        #expect(sut.history.isEmpty)
+        #expect(mockHistory.fetchCallCount == fetchesSoFar)
+    }
+
     // MARK: - History
 
     @Test func loadHistoryPublishesEntriesForMedicine() async {
