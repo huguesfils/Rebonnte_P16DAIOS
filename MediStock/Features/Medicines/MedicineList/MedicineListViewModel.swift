@@ -59,9 +59,6 @@ final class MedicineListViewModel {
     }
 }
 
-//  check leaks: print init et deinit
-// 
-
 // MARK: - Sorting
 
 enum SortOption: String, CaseIterable, Identifiable {

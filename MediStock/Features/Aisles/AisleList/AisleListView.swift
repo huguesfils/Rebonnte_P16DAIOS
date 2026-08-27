@@ -10,18 +10,20 @@ struct AisleListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        let aisles = viewModel.aisles
+
+        return NavigationStack {
             Group {
-                if viewModel.isLoading && viewModel.aisles.isEmpty {
+                if viewModel.isLoading && aisles.isEmpty {
                     ProgressView("Chargement des rayons…")
-                } else if viewModel.aisles.isEmpty {
+                } else if aisles.isEmpty {
                     ContentUnavailableView(
                         "Aucun rayon",
                         systemImage: "shippingbox",
                         description: Text("Ajoutez un médicament pour créer votre premier rayon.")
                     )
                 } else {
-                    aisleList
+                    aisleList(aisles)
                 }
             }
             .navigationTitle("Rayons")
@@ -40,8 +42,8 @@ struct AisleListView: View {
         }
     }
 
-    private var aisleList: some View {
-        List(viewModel.aisles, id: \.self) { aisle in
+    private func aisleList(_ aisles: [String]) -> some View {
+        List(aisles, id: \.self) { aisle in
             NavigationLink(value: aisle) {
                 Text(aisle)
             }

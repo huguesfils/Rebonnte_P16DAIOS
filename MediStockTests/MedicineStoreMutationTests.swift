@@ -244,41 +244,67 @@ struct MedicineStoreMutationTests {
 
     // MARK: - addMedicine
 
-    @Test func addMedicineRecordsHistoryAndReloads() async throws {
-        let sut = makeSUT()
+    @Test func addMedicineInsertsLocallyWithoutReload() async throws {
+        let sut = await makeLoadedSUT([.stub(id: "1", name: "Existant")])
 
         try await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Rayon 3")
 
         #expect(mockHistory.addedEntries.count == 1)
         #expect(mockHistory.addedEntries.first?.action == "Ajout de Doliprane")
         #expect(mockHistory.addedEntries.first?.details == "Créé avec un stock de 12 dans Rayon 3")
+        #expect(sut.medicines.map(\.name) == ["Existant", "Doliprane"])
         #expect(mockMedicines.fetchCallCount == 1)
-        #expect(sut.medicines.count == 1)
     }
 
-    @Test func addMedicineReloadsEvenWhenTheHistoryWriteFails() async {
-        let sut = makeSUT()
+    @Test func addMedicineKeepsTheInsertionWhenTheHistoryWriteFails() async {
+        let sut = await makeLoadedSUT([])
         mockHistory.errorToThrow = MediStockError.networkUnavailable
 
         await #expect(throws: MediStockError.networkUnavailable) {
             try await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Rayon 3")
         }
 
-        #expect(mockMedicines.fetchCallCount == 1)
         #expect(sut.medicines.count == 1)
+        #expect(mockMedicines.fetchCallCount == 1)
+    }
+
+    @Test func addMedicineDoesNotRefetchTheWholeCollection() async throws {
+        let sut = await makeLoadedSUT([.stub(id: "1")])
+
+        try await sut.addMedicine(name: "Doliprane", stock: 12, aisle: "Rayon 3")
+        try await sut.addMedicine(name: "Efferalgan", stock: 5, aisle: "Rayon 3")
+
+        #expect(sut.medicines.count == 3)
+        #expect(mockMedicines.fetchCallCount == 1)
     }
 
     // MARK: - delete
 
-    @Test func deleteRemovesMedicineAndReloads() async throws {
-        let sut = await makeLoadedSUT([.stub(id: "1", name: "Doliprane", stock: 7, aisle: "Rayon 2")])
+    @Test func deleteRemovesMedicineLocallyWithoutReload() async throws {
+        let sut = await makeLoadedSUT([
+            .stub(id: "1", name: "Doliprane", stock: 7, aisle: "Rayon 2"),
+            .stub(id: "2", name: "Efferalgan")
+        ])
 
         try await sut.delete(medicineId: "1")
 
         #expect(mockMedicines.deletedIds == ["1"])
-        #expect(sut.medicines.isEmpty)
+        #expect(sut.medicines.map(\.id) == ["2"])
+        #expect(mockMedicines.fetchCallCount == 1)
         #expect(mockHistory.addedEntries.first?.action == "Suppression de Doliprane")
         #expect(mockHistory.addedEntries.first?.details == "Retiré de Rayon 2, stock de 7")
+    }
+
+    @Test func deleteKeepsTheRemovalWhenTheHistoryWriteFails() async {
+        let sut = await makeLoadedSUT([.stub(id: "1")])
+        mockHistory.errorToThrow = MediStockError.networkUnavailable
+
+        await #expect(throws: MediStockError.networkUnavailable) {
+            try await sut.delete(medicineId: "1")
+        }
+
+        #expect(sut.medicines.isEmpty)
+        #expect(mockMedicines.fetchCallCount == 1)
     }
 
     @Test func deleteFailureThrowsAndKeepsMedicine() async {

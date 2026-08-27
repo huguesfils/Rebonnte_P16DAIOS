@@ -10,7 +10,9 @@ struct MedicineListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        let displayed = viewModel.filteredAndSortedMedicines
+
+        return NavigationStack {
             Group {
                 if viewModel.isLoading && viewModel.isStockEmpty {
                     ProgressView("Chargement des médicaments…")
@@ -20,10 +22,10 @@ struct MedicineListView: View {
                         systemImage: "pills",
                         description: Text("Ajoutez un premier médicament pour démarrer votre stock.")
                     )
-                } else if viewModel.filteredAndSortedMedicines.isEmpty {
+                } else if displayed.isEmpty {
                     ContentUnavailableView.search(text: viewModel.filterText)
                 } else {
-                    list
+                    list(displayed)
                 }
             }
             .navigationTitle("Médicaments")
@@ -63,9 +65,9 @@ struct MedicineListView: View {
         }
     }
 
-    private var list: some View {
+    private func list(_ medicines: [Medicine]) -> some View {
         List {
-            ForEach(viewModel.filteredAndSortedMedicines) { medicine in
+            ForEach(medicines) { medicine in
                 NavigationLink {
                     MedicineDetailView(medicineId: medicine.id, container: container)
                 } label: {

@@ -2,6 +2,8 @@ import Foundation
 import FirebaseFirestore
 
 struct FirestoreHistoryRepository: HistoryRepository {
+    static let pageSize = 25
+
     private var collection: CollectionReference {
         Firestore.firestore().collection("history")
     }
@@ -12,10 +14,10 @@ struct FirestoreHistoryRepository: HistoryRepository {
         do {
             let snapshot = try await collection
                 .whereField("medicineId", isEqualTo: medicineId)
+                .order(by: "timestamp", descending: true)
+                .limit(to: Self.pageSize)
                 .getDocuments()
-            return snapshot.documents
-                .compactMap(Self.makeEntry(from:))
-                .sorted { $0.timestamp > $1.timestamp }
+            return snapshot.documents.compactMap(Self.makeEntry(from:))
         } catch {
             throw FirestoreErrorMapper.map(error)
         }

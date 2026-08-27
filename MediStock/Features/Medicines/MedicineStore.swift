@@ -48,7 +48,9 @@ final class MedicineStore {
 
         try await medicineRepository.save(medicine)
 
-        try await recordHistoryThenReload(
+        insert(medicine)
+
+        try await recordHistory(
             medicineId: medicine.id,
             user: user,
             action: "Ajout de \(medicine.name)",
@@ -109,7 +111,9 @@ final class MedicineStore {
 
         try await medicineRepository.delete(medicineId: medicineId)
 
-        try await recordHistoryThenReload(
+        remove(medicineId: medicineId)
+
+        try await recordHistory(
             medicineId: medicineId,
             user: user,
             action: "Suppression de \(medicine.name)",
@@ -142,6 +146,14 @@ final class MedicineStore {
     private func apply(_ medicine: Medicine) {
         guard let index = medicines.firstIndex(where: { $0.id == medicine.id }) else { return }
         medicines[index] = medicine
+    }
+
+    private func insert(_ medicine: Medicine) {
+        medicines.append(medicine)
+    }
+
+    private func remove(medicineId: String) {
+        medicines.removeAll { $0.id == medicineId }
     }
 
     private func commitStockChange(
@@ -182,23 +194,5 @@ final class MedicineStore {
         )
 
         try await historyRepository.addEntry(entry)
-    }
-
-    private func recordHistoryThenReload(
-        medicineId: String,
-        user: AppUser,
-        action: String,
-        details: String
-    ) async throws {
-        var historyError: Error?
-        do {
-            try await recordHistory(medicineId: medicineId, user: user, action: action, details: details)
-        } catch {
-            historyError = error
-        }
-
-        await load()
-
-        if let historyError { throw historyError }
     }
 }

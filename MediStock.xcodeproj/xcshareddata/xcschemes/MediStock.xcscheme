@@ -49,16 +49,6 @@
                ReferencedContainer = "container:MediStock.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "53E0D8AC2C06084900DE1134"
-               BuildableName = "MediStockUITests.xctest"
-               BlueprintName = "MediStockUITests"
-               ReferencedContainer = "container:MediStock.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

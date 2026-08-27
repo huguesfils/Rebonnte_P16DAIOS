@@ -12,15 +12,17 @@ struct AisleMedicinesView: View {
     }
 
     var body: some View {
-        Group {
-            if viewModel.medicines.isEmpty {
+        let medicines = viewModel.medicines
+
+        return Group {
+            if medicines.isEmpty {
                 ContentUnavailableView(
                     "Rayon vide",
                     systemImage: "tray",
                     description: Text("Ce rayon ne contient plus aucun médicament.")
                 )
             } else {
-                list
+                list(medicines)
             }
         }
         .navigationTitle(viewModel.aisle)
@@ -28,9 +30,9 @@ struct AisleMedicinesView: View {
         .errorAlert($viewModel.errorMessage)
     }
 
-    private var list: some View {
+    private func list(_ medicines: [Medicine]) -> some View {
         List {
-            ForEach(viewModel.medicines) { medicine in
+            ForEach(medicines) { medicine in
                 NavigationLink {
                     MedicineDetailView(medicineId: medicine.id, container: container)
                 } label: {

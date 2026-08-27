@@ -1,4 +1,19 @@
 {
-  "indexes": [],
-  "fieldOverrides": []
+  "indexes": [
+    {
+      "collectionGroup": "history",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "medicineId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    { "collectionGroup": "history", "fieldPath": "action", "indexes": [] },
+    { "collectionGroup": "history", "fieldPath": "details", "indexes": [] },
+    { "collectionGroup": "history", "fieldPath": "userEmail", "indexes": [] },
+    { "collectionGroup": "medicines", "fieldPath": "name", "indexes": [] },
+    { "collectionGroup": "medicines", "fieldPath": "aisle", "indexes": [] }
+  ]
 }

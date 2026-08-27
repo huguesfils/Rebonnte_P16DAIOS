@@ -15,9 +15,10 @@ final class MockHistoryRepository: HistoryRepository, @unchecked Sendable {
     func fetchHistory(medicineId: String) async throws -> [HistoryEntry] {
         fetchCallCount += 1
         if let errorToThrow { throw errorToThrow }
-        return storedEntries
+        let ordered = storedEntries
             .filter { $0.medicineId == medicineId }
             .sorted { $0.timestamp > $1.timestamp }
+        return Array(ordered.prefix(FirestoreHistoryRepository.pageSize))
     }
 
     func addEntry(_ entry: HistoryEntry) async throws {
